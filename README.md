@@ -1,34 +1,33 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 기획안
 
-## Getting Started
+## 나를 제일 잘 나타낼 수 있는 공간.
 
-First, run the development server:
+### 로고?
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+- 글씨이기 보단 그림이고 싶다
+- 
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 기능?
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+- 여행을 기록하는 공간
+- 게임을 할 수 있는 공간
+- 그저 글을 기록하는 공간
+- 내가 나를 설명한 공간
+- 인스타 스토리 처럼 올리는 공간
+- 이런 공간들을 위한 확장성
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### 개발 방향
 
-## Learn More
+- Full Stack : NExt JS, Prisma
+- 
+- 
 
-To learn more about Next.js, take a look at the following resources:
+# 큰 컨셉
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+일반적인 햄버거 메뉴 버튼을 사용하고 싶지 않았다.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+그렇지만 내가 지금 보고 있는 페이지를 간단하게 아이콘으로 요약해주고,
 
-## Deploy on Vercel
+그 아이콘을 타고 여행을 다니는 느낌을 주고 싶었다.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+그래서 어쩌다 보니 애플의 다이나믹 아일랜드 처럼 메뉴 버튼을 만들기로 했다.
