@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSpring, animated } from "@react-spring/web";
 import Lottie from "react-lottie-player";
 import homeLottie from "../../src/lottie/homeLottie.json";
+import logo from "../../src/img/logo.png";
 export default function TravelButton() {
   const [currentMode, setCurrentMode] = useState(false);
   const [mediaState, setMediaState] = useState(false);
@@ -45,10 +46,15 @@ export default function TravelButton() {
           className="flex flex-col justify-center items-center z-100 cursor-pointer rounded-full flex-initial shadow-xl  bg-gradient-to-r from-cyan-500 to-blue-500"
         >
           {currentMode ? (
-            <></>
+            <div className="flex flex-col justify-center items-center">
+              <Image
+                src={logo}
+                className="h-20 w-20 shadow-xl shadow-indigo-500/50"
+              ></Image>
+            </div>
           ) : (
             <Lottie
-              className="w-15 h-15"
+              className="w-16 h-16"
               loop
               animationData={homeLottie}
               play
