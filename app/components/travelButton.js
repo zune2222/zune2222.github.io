@@ -39,7 +39,7 @@ export default function TravelButton() {
   };
   return (
     <div className="z-50 fixed w-full top-0">
-      <div className="z-100 flex flex-col p-3 min-h-screen justify-start items-center">
+      <div className="z-100 flex flex-col p-3 justify-start items-center">
         <animated.div
           onClick={handleClick}
           style={springs}

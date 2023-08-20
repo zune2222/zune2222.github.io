@@ -1,5 +1,5 @@
-import "./globals.css";
-import { appleFontL } from "./components/fontZip";
+import "../globals.css";
+import { appleFontL } from "../components/fontZip";
 
 export const metadata = {
   title: "zun2log",
