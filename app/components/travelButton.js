@@ -46,12 +46,7 @@ export default function TravelButton() {
           className="flex flex-col justify-center items-center z-100 cursor-pointer rounded-full flex-initial shadow-xl  bg-gradient-to-r from-cyan-500 to-blue-500"
         >
           {currentMode ? (
-            <div className="flex flex-col justify-center items-center">
-              <Image
-                src={logo}
-                className="h-20 w-20 shadow-xl shadow-indigo-500/50"
-              ></Image>
-            </div>
+            <div className="flex flex-col justify-center items-center"></div>
           ) : (
             <Lottie
               className="w-16 h-16"
