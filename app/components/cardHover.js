@@ -67,12 +67,10 @@ export default function CardHover({ children }) {
         .card {
           display: flex;
           flex-direction: column;
-          box-shadow: 0px 24px 72px rgba(36, 42, 48, 0.3),
-            inset 0px 0px 0px 1px rgba(0, 0, 0, 0.08);
-          border-radius: 16px;
-          box-shadow: 0px 24px 72px rgba(36, 42, 48, 0.3),
-            inset 0px 0px 0px 1px rgba(0, 0, 0, 0.08);
-
+          // box-shadow: 0px 24px 72px rgba(36, 42, 48, 0.3),
+          //   inset 0px 0px 0px 1px rgba(0, 0, 0, 0.08);
+          // box-shadow: 0px 24px 72px rgba(36, 42, 48, 0.3),
+          //   inset 0px 0px 0px 1px rgba(0, 0, 0, 0.08);
           transition: all 300ms ease-out;
         }
       `}</style>

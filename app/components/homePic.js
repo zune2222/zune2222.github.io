@@ -40,7 +40,10 @@ export default function HomePic() {
             }
             passHref
           >
-            <Image className="w-56 h-56" src={Logo}></Image>
+            <Image
+              className="w-56 h-56 rounded-3xl shadow-2xl"
+              src={Logo}
+            ></Image>
           </Link>
         </CardHover>
       </div>
