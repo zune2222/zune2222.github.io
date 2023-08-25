@@ -38,6 +38,7 @@ export default function HomePic() {
             href={
               "https://zune2222.notion.site/Pak-Jun-Yi-2c6ae27311c94be48543fc00c0ea861a?pvs=4"
             }
+            target="_blank"
             passHref
           >
             <Image

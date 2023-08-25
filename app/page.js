@@ -1,12 +1,13 @@
 "use client";
-import TravelButton from "./components/travelButton";
 import HomePic from "./components/homePic";
-import CardHover from "./components/cardHover";
+import HomeIntro from "./components/homeIntro";
+import CopyRightFooter from "./components/copyrightFooter";
 export default function Home() {
   return (
     <>
-      <TravelButton />
       <HomePic />
+      <HomeIntro />
+      <CopyRightFooter />
     </>
   );
 }

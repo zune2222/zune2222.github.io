@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   useSpring,
   animated,
@@ -11,6 +12,8 @@ import {
 import Lottie from "react-lottie-player";
 import homeLottie from "../../src/lottie/homeLottie.json";
 import logo from "../../src/img/logo.png";
+import logIcon from "../../src/img/logIcon.png";
+import logoTranparency from "../../src/img/logoTranparency.png";
 export default function TravelButton() {
   const [currentMode, setCurrentMode] = useState(false);
   const [mediaState, setMediaState] = useState(false);
@@ -30,8 +33,8 @@ export default function TravelButton() {
             tension: 300,
             mass: 0.1,
           },
-          width: "4rem",
-          height: "4rem",
+          width: "4.3rem",
+          height: "4.3rem",
         }
       : {
           ref: springApi,
@@ -39,30 +42,36 @@ export default function TravelButton() {
             tension: 250,
             mass: 2,
           },
-          width: mediaState ? "50rem" : "20rem",
+          width: mediaState ? "20rem" : "20rem",
           height: "8rem",
         }
   );
   const data = [
-    { src: logo, class: "w-12 h-12 rounded-full", key: 1 },
-    { src: logo, class: "w-12 h-12 rounded-full", key: 2 },
-    { src: logo, class: "w-12 h-12 rounded-full", key: 3 },
-    { src: logo, class: "w-12 h-12 rounded-full", key: 4 },
-    { src: logo, class: "w-12 h-12 rounded-full", key: 5 },
-    { src: logo, class: "w-12 h-12 rounded-full", key: 6 },
+    { link: "/", src: logo, class: "w-12 h-12 rounded-full", key: 1 },
+    {
+      link: "/log",
+      src: logIcon,
+      class: "w-12 h-12 rounded-full bg-slate-300",
+      key: 2,
+    },
+    { link: "/", src: logo, class: "w-12 h-12 rounded-full", key: 3 },
+    { link: "/", src: logo, class: "w-12 h-12 rounded-full", key: 4 },
+    { link: "/", src: logo, class: "w-12 h-12 rounded-full", key: 5 },
+    { link: "/", src: logo, class: "w-12 h-12 rounded-full", key: 6 },
   ];
   const transApi = useSpringRef();
-  const transitions = useTransition(currentMode ? data : [], {
-    ref: transApi,
-    trail: 400 / data.length,
-    from: { opacity: 0, scale: 0 },
-    enter: { opacity: 1, scale: 1 },
-    leave: { opacity: 0, sacle: 0 },
-  });
-  useChain(currentMode ? [springApi, transApi] : [transApi, springApi], [
-    0,
-    currentMode ? 0.1 : 0.8,
-  ]);
+  const transitions = useTransition(
+    currentMode ? data : [{ src: logoTranparency, class: "w-12 h-12" }],
+    {
+      ref: transApi,
+      trail: 400 / data.length,
+      from: { opacity: 0, scale: 0 },
+      enter: { opacity: 1, scale: 1 },
+      leave: { opacity: 0, scale: 0 },
+      reset: true,
+    }
+  );
+  useChain([springApi, transApi], [0, 0.2]);
   const handleClick = () => {
     setCurrentMode(!currentMode);
   };
@@ -74,10 +83,22 @@ export default function TravelButton() {
           style={springs}
           className="flex flex-col justify-center items-center z-100 cursor-pointer rounded-full flex-initial bg-white/30 shadow-2xl backdrop-opacity-25"
         >
-          <div className="grid grid-rows-2 grid-flow-col gap-2">
+          <div
+            className={
+              currentMode
+                ? "grid grid-rows-2 items-center grid-flow-col gap-2"
+                : "items-center justify-center"
+            }
+          >
             {transitions((style, item) => (
               <animated.div style={{ ...style }}>
-                <Image src={item.src} className={item.class} />
+                {currentMode ? (
+                  <Link href={`${item.link}`}>
+                    <Image src={item.src} className={item.class} />
+                  </Link>
+                ) : (
+                  <Image src={item.src} className={item.class} />
+                )}
               </animated.div>
             ))}
           </div>
