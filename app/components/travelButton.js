@@ -14,17 +14,22 @@ import homeLottie from "../../src/lottie/homeLottie.json";
 import logo from "../../src/img/logo.png";
 import logIcon from "../../src/img/logIcon.png";
 import logoTranparency from "../../src/img/logoTranparency.png";
+import daisyBooks from "../../src/img/daisyBooks.png";
+import { usePathname } from "next/navigation";
 export default function TravelButton() {
   const [currentMode, setCurrentMode] = useState(false);
-  const [mediaState, setMediaState] = useState(false);
-  useEffect(() => {
-    if (matchMedia("screen and (min-width: 1024px)").matches) {
-      setMediaState(true);
-    } else {
-      setMediaState(false);
-    }
-  }, []);
+  const [currentPagePic, setCurrentPagePic] = useState(logoTranparency);
+
+  const pathname = usePathname();
   const springApi = useSpringRef();
+  useEffect(() => {
+    if (pathname === "/") {
+      setCurrentPagePic(logoTranparency);
+    }
+    if (pathname === "/log") {
+      setCurrentPagePic(daisyBooks);
+    }
+  }, [pathname]);
   const springs = useSpring(
     currentMode === false
       ? {
@@ -42,7 +47,7 @@ export default function TravelButton() {
             tension: 250,
             mass: 2,
           },
-          width: mediaState ? "20rem" : "20rem",
+          width: "20rem",
           height: "8rem",
         }
   );
@@ -50,8 +55,8 @@ export default function TravelButton() {
     { link: "/", src: logo, class: "w-12 h-12 rounded-full", key: 1 },
     {
       link: "/log",
-      src: logIcon,
-      class: "w-12 h-12 rounded-full bg-slate-300",
+      src: daisyBooks,
+      class: "w-12 h-12 rounded-full bg-red-50",
       key: 2,
     },
     { link: "/", src: logo, class: "w-12 h-12 rounded-full", key: 3 },
@@ -61,7 +66,7 @@ export default function TravelButton() {
   ];
   const transApi = useSpringRef();
   const transitions = useTransition(
-    currentMode ? data : [{ src: logoTranparency, class: "w-12 h-12" }],
+    currentMode ? data : [{ src: currentPagePic, class: "w-12 h-12" }],
     {
       ref: transApi,
       trail: 400 / data.length,

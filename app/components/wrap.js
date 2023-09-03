@@ -1,17 +1,14 @@
 "use client";
-import { AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
-import PageTransition from "./pageTransition";
 import TravelButton from "./travelButton";
+import useObserver from "./useObserver";
 export default function Wrap({ children }) {
+  const rootRef = useObserver();
   const pathname = usePathname();
   return (
     <>
       <TravelButton />
-      {children}
-      {/* <AnimatePresence isExiting={true} mode="wait">
-        <PageTransition key={pathname}>{children}</PageTransition>
-      </AnimatePresence> */}
+      <div ref={rootRef}>{children}</div>
     </>
   );
 }

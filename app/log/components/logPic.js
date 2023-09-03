@@ -3,8 +3,8 @@ import Image from "next/image";
 export default function LogPic() {
   return (
     <>
-      <div className="flex flex-row absolute w-full z-1 h-auto">
-        <div className="flex z-0 bg-slate-700">
+      <div className="flex bg-red-50 flex-row w-full z-1 h-auto">
+        <div className="mt-5 flex z-0">
           <Image className="h-auto w-full" src={logBooks}></Image>
         </div>
       </div>

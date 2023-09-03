@@ -1,12 +1,7 @@
 import { gsap } from "gsap";
-import { useCallback, useState, useEffect } from "react";
-import Logo from "../../src/img/logo.png";
-import Image from "next/image";
+import { useCallback, useState } from "react";
 export default function CardHover({ children }) {
   const [cardElement, setCardElement] = useState(null);
-  useEffect(() => {
-    console.log(cardElement);
-  }, [cardElement]);
   const setTransformVariable = useCallback(
     (e) => {
       if (cardElement != null) {
@@ -61,7 +56,6 @@ export default function CardHover({ children }) {
           justify-content: center;
           align-items: center;
           perspective: 800px;
-          padding: 50px;
         }
 
         .card {

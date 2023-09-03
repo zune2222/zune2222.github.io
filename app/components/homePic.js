@@ -42,7 +42,7 @@ export default function HomePic() {
             passHref
           >
             <Image
-              className="w-56 h-56 rounded-3xl shadow-2xl"
+              className="toc-class opacity-0 translate-y-6 w-56 h-56 rounded-3xl shadow-2xl"
               src={Logo}
             ></Image>
           </Link>
