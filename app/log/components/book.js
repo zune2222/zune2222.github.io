@@ -1,6 +1,6 @@
-import CardHover from "@/app/components/cardHover";
+import CardHover from "../../components/cardHover";
 import Image from "next/image";
-import { appleFontB } from "@/app/components/fontZip";
+import { appleFontB } from "../../components/fontZip";
 import bookLogo from "../../../src/img/bookLogo.png";
 export default function Book({ title: title }) {
   return (

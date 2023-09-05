@@ -1,4 +1,4 @@
-import { appleFontEB, appleFontB } from "@/app/components/fontZip";
+import { appleFontEB, appleFontB } from "../../components/fontZip";
 export default function LogTitle() {
   return (
     <div className="flex w-full flex-col justfy-center items-center">
