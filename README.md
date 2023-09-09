@@ -1,33 +1,67 @@
-# 기획안
+# zun2log
 
-## 나를 제일 잘 나타낼 수 있는 공간.
+---
 
-### 로고?
+## 박준이의 블로그
 
-- 글씨이기 보단 그림이고 싶다
-- 
+"zun2log"은 제가 개발한 개인 블로그입니다. 이 블로그는 제 관심사와 취향을 반영하며, 디자인, 기획, 기능, 그림, 애니메이션 등 제가 좋아하는 모든 것들로 가득 차 있습니다.
 
-### 기능?
+### 주요 특징
 
-- 여행을 기록하는 공간
-- 게임을 할 수 있는 공간
-- 그저 글을 기록하는 공간
-- 내가 나를 설명한 공간
-- 인스타 스토리 처럼 올리는 공간
-- 이런 공간들을 위한 확장성
+- 화려한 디자인과 동시에 적절한 애니메이션 효과를 통해 사용자에게 시각적으로 풍부한 경험을 제공합니다.
+- 모든 그림은 박준이가 직접 그린 것으로, 블로그 내에서 그림 작품을 감상할 수 있습니다.
+- 일반적이지 않은 네비게이션 바를 통해 블로그를 탐색하고 손쉽게 원하는 콘텐츠를 찾을 수 있습니다.
 
-### 개발 방향
+### 기술 스택
 
-- Full Stack : NExt JS, Prisma
-- 
-- 
+이 프로젝트는 다음 기술 스택을 사용하여 개발되었습니다:
 
-# 큰 컨셉
+- [Next.js](https://nextjs.org/): 빠르고 강력한 리액트 프레임워크를 기반으로 한 웹 애플리케이션 개발 플랫폼.
+- ContentLayer: 내용 관리 시스템 (CMS)으로 사용되며, 블로그 콘텐츠를 관리하고 게시하는 데 사용됩니다.
+- [GitHub Pages](https://pages.github.com/): 프로젝트를 호스팅하고 무료로 배포하는 데 사용됩니다.
+- [react-spring](https://www.react-spring.io/): 웹 애니메이션을 만들기 위한 리액트 애니메이션 라이브러리.
 
-일반적인 햄버거 메뉴 버튼을 사용하고 싶지 않았다.
+### 데모
 
-그렇지만 내가 지금 보고 있는 페이지를 간단하게 아이콘으로 요약해주고,
+프로젝트의 데모를 확인하려면 [블로그 데모 바로가기](http://zun2log.iptime.org:3000/)를 방문하세요. (확률적으로 열려 있음.)
 
-그 아이콘을 타고 여행을 다니는 느낌을 주고 싶었다.
+### 작성자
 
-그래서 어쩌다 보니 애플의 다이나믹 아일랜드 처럼 메뉴 버튼을 만들기로 했다.
+- 박준이
+    - GitHub: [zune2222](https://github.com/zune2222)
+    - 이메일: [zun_e@kakao.com](mailto:zun_e@kakao.com)
+
+---
+
+# Jun's Blog
+
+"zun2log" is a personal blog developed by me, Jun. This blog is a reflection of my interests and preferences, filled with everything I love, including design, planning, features, artwork, animations, and more.
+
+### Key Features
+
+- Offers a visually rich experience to users with a combination of dazzling design and appropriate animation effects.
+- All artwork featured on the blog is hand-drawn by me, and you can enjoy these artistic creations.
+- Features an unconventional navigation bar for easy exploration of the blog and quick access to desired content.
+
+### Technology Stack
+
+This project was developed using the following technology stack:
+
+- [Next.js](https://nextjs.org/): A fast and powerful React framework for web application development.
+- ContentLayer: Used as a content management system (CMS) for managing and publishing blog content.
+- [GitHub Pages](https://pages.github.com/): Used for hosting and free deployment of the project.
+- [react-spring](https://www.react-spring.io/): A React animation library for creating web animations.
+
+### Demo
+
+To check out a live demo of the project, visit the [Blog Demo](http://zun2log.iptime.org:3000/). (maybe?)
+
+### Contribution
+
+If you'd like to contribute to this project, fork the GitHub repository and submit a pull request. Suggestions for improvements or bug reports are also welcome.
+
+### Author
+
+- Jun
+    - GitHub: [zune2222](https://github.com/zune2222)
+    - Email: [zun_e@kakao.com](mailto:zun_e@kakao.com)
