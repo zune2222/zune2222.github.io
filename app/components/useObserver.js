@@ -14,11 +14,11 @@ export default function useObserver() {
           entry.target.style.transition = "500ms ease-out";
           entry.target.style.transitionDelay = `${i * 30}ms`;
         } else {
-          entry.target.style.opacity = "0";
-          entry.target.style.transform = "translateY(20px)";
-          entry.target.style.pointerEvents = "none";
-          entry.target.style.transition = "200ms ease-out";
-          entry.target.style.transitionDelay = `${i * 15}ms`;
+          // entry.target.style.opacity = "0";
+          // entry.target.style.transform = "translateY(20px)";
+          // entry.target.style.pointerEvents = "none";
+          // entry.target.style.transition = "200ms ease-out";
+          // entry.target.style.transitionDelay = `${i * 15}ms`;
         }
       });
     };
