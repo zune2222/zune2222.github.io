@@ -1,6 +1,7 @@
 import { format, parseISO } from "date-fns";
 import { allPosts } from "contentlayer/generated";
 import { appleFontL, appleFontSB } from "app/components/fontZip";
+import Giscus from "app/components/giscus";
 export const generateStaticParams = async () =>
   allPosts.map((post) => ({ slug: post._raw.flattenedPath }));
 
@@ -30,6 +31,7 @@ const PostLayout = ({ params }) => {
         className="[&>*]:mb-3 [&>*:last-child]:mb-0 text-black p-5"
         dangerouslySetInnerHTML={{ __html: post.body.html }}
       />
+      <Giscus />
     </article>
   );
 };
