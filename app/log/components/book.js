@@ -14,7 +14,7 @@ export default function Book({ title: title, url: url, date: date }) {
           <div className="h-full w-5 bg-white "></div>
           <div className="flex-col">
             <div
-              className={`text-lg mt-5 mr-1 h-16 w-full text-black text-center items-center justify-center ${appleFontB.className}`}
+              className={`text-sm mt-5 mr-1 h-16 w-full text-black text-center items-center justify-center ${appleFontB.className}`}
             >
               {title}
               <div className="mt-1 text-sm text-gray-400">
