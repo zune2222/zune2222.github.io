@@ -59,10 +59,6 @@ export default function TravelButton() {
       class: "w-12 h-12 rounded-full bg-red-50",
       key: 2,
     },
-    { link: "/", src: logo, class: "w-12 h-12 rounded-full", key: 3 },
-    { link: "/", src: logo, class: "w-12 h-12 rounded-full", key: 4 },
-    { link: "/", src: logo, class: "w-12 h-12 rounded-full", key: 5 },
-    { link: "/", src: logo, class: "w-12 h-12 rounded-full", key: 6 },
   ];
   const transApi = useSpringRef();
   const transitions = useTransition(
