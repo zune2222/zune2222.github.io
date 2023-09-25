@@ -21,15 +21,15 @@
 - [GitHub Pages](https://pages.github.com/): 프로젝트를 호스팅하고 무료로 배포하는 데 사용됩니다.
 - [react-spring](https://www.react-spring.io/): 웹 애니메이션을 만들기 위한 리액트 애니메이션 라이브러리.
 
-### 데모
+### 블로그
 
-프로젝트의 데모를 확인하려면 [블로그 데모 바로가기](http://zun2log.iptime.org:3000/)를 방문하세요. (확률적으로 열려 있음.)
+블로그에 접속하기! [블로그 바로가기](https://zune2222.github.io)를 방문하세요.
 
 ### 작성자
 
 - 박준이
-    - GitHub: [zune2222](https://github.com/zune2222)
-    - 이메일: [zun_e@kakao.com](mailto:zun_e@kakao.com)
+  - GitHub: [zune2222](https://github.com/zune2222)
+  - 이메일: [zun_e@kakao.com](mailto:zun_e@kakao.com)
 
 ---
 
@@ -54,7 +54,7 @@ This project was developed using the following technology stack:
 
 ### Demo
 
-To check out a live demo of the project, visit the [Blog Demo](http://zun2log.iptime.org:3000/). (maybe?)
+To check out a my blog, visit the [Blog](https://zune2222.github.io)
 
 ### Contribution
 
@@ -63,5 +63,5 @@ If you'd like to contribute to this project, fork the GitHub repository and subm
 ### Author
 
 - Jun
-    - GitHub: [zune2222](https://github.com/zune2222)
-    - Email: [zun_e@kakao.com](mailto:zun_e@kakao.com)
+  - GitHub: [zune2222](https://github.com/zune2222)
+  - Email: [zun_e@kakao.com](mailto:zun_e@kakao.com)
