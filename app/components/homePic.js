@@ -30,7 +30,7 @@ export default function HomePic() {
         ></Lottie>
       </div>
       <div className="flex z-0 bg-slate-700">
-        <Image className="h-auto w-full" src={mainLogo}></Image>
+        <Image alt="main logo" className="h-auto w-full" src={mainLogo}></Image>
       </div>
       <div className="mt-10 flex w-full h-auto z-2 flex flex-col items-center justify-center">
         <CardHover className="cursor-pointer">
@@ -42,6 +42,7 @@ export default function HomePic() {
             passHref
           >
             <Image
+              alt="logo"
               className="toc-class opacity-0 translate-y-6 w-56 h-56 rounded-3xl shadow-2xl"
               src={Logo}
             ></Image>

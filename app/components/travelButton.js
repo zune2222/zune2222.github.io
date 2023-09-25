@@ -95,10 +95,18 @@ export default function TravelButton() {
               <animated.div style={{ ...style }}>
                 {currentMode ? (
                   <Link href={`${item.link}`}>
-                    <Image src={item.src} className={item.class} />
+                    <Image
+                      alt="travleButtonImage"
+                      src={item.src}
+                      className={item.class}
+                    />
                   </Link>
                 ) : (
-                  <Image src={item.src} className={item.class} />
+                  <Image
+                    alt="travelButtonImage"
+                    src={item.src}
+                    className={item.class}
+                  />
                 )}
               </animated.div>
             ))}

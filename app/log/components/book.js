@@ -22,7 +22,11 @@ export default function Book({ title: title, url: url, date: date }) {
               </div>
             </div>
 
-            <Image src={bookLogo} className="w-30 h-30 pr-1"></Image>
+            <Image
+              alt="bookLogo"
+              src={bookLogo}
+              className="w-30 h-30 pr-1"
+            ></Image>
           </div>
         </div>
       </Link>
