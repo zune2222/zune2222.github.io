@@ -29,10 +29,6 @@ const PostLayout = ({ params }) => {
           {post.title}
         </h1>
       </div>
-      {/* <div
-        className="[&>*]:mb-3 [&>*:last-child]:mb-0 text-black p-5"
-        dangerouslySetInnerHTML={{ __html: post.body.html }}
-      /> */}
       <div className="text-black p-5">
         <MDXContent />
         <Giscus />
