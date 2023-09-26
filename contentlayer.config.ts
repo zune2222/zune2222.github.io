@@ -1,8 +1,16 @@
 import { defineDocumentType, makeSource } from "contentlayer/source-files";
 import rehypePrettyCode from "rehype-pretty-code";
+import remarkGfm from "remark-gfm";
+
+const rehypeOptions = {
+  theme: "slack-dark",
+  keepBackground: true,
+};
+
 export const Post = defineDocumentType(() => ({
   name: "Post",
   filePathPattern: `**/*.mdx`,
+  contentType: "mdx",
   fields: {
     title: { type: "string", required: true },
     date: { type: "date", required: true },
@@ -20,6 +28,6 @@ export default makeSource({
   contentDirPath: "app/mdxes/",
   documentTypes: [Post],
   mdx: {
-    rehypePlugins: [rehypePrettyCode],
+    rehypePlugins: [[rehypePrettyCode, rehypeOptions]],
   },
 });
