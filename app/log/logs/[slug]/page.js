@@ -19,16 +19,16 @@ const PostLayout = ({ params }) => {
     <article
       className={`${appleFontL.className} prose lg:prose-xl mt-20 mx-auto max-w-4xl py-8`}
     >
-      {/* <div className="mb-8 text-center">
+      <div className="mb-8 text-center">
         <time dateTime={post.date} className="mb-1 text-xs text-gray-600">
           {format(parseISO(post.date), "LLLL d, yyyy")}
         </time>
         <h1 className={`${appleFontSB.className} text-4xl text-black`}>
           {post.title}
         </h1>
-      </div> */}
+      </div>
       <div className="text-black p-5">
-        <MDXContent />
+        {/* <MDXContent /> */}
         <Giscus />
       </div>
     </article>
