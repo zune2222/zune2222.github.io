@@ -10,14 +10,18 @@
     "serve": "npx http-server out"
   },
   "dependencies": {
+    "@mdx-js/loader": "^2.3.0",
+    "@next/mdx": "^13.5.3",
     "@react-spring/web": "^9.7.2",
     "autoprefixer": "10.4.14",
     "contentlayer": "^0.3.4",
     "date-fns": "^2.30.0",
+    "esbuild": "^0.19.3",
     "eslint": "8.41.0",
     "eslint-config-next": "13.4.4",
     "framer-motion": "^10.16.1",
     "gsap": "^3.12.2",
+    "mdx-bundler": "^9.2.1",
     "next": "13.4.4",
     "next-contentlayer": "^0.3.4",
     "postcss": "8.4.24",

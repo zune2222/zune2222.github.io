@@ -28,7 +28,7 @@ const PostLayout = ({ params }) => {
         </h1>
       </div>
       <div className="text-black p-5">
-        {/* <MDXContent /> */}
+        <MDXContent />
         <Giscus />
       </div>
     </article>
