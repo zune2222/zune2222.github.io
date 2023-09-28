@@ -1,3 +1,4 @@
+"use client";
 import { format, parseISO } from "date-fns";
 import { allPosts } from "contentlayer/generated";
 import { appleFontL, appleFontSB } from "app/components/fontZip";

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../contentlayer.config.js"],
-  "sourcesContent": ["import { makeSource, defineDatabase } from \"contentlayer-source-notion\";\nimport * as notion from \"@notionhq/client\";\nconst client = new notion.Client({ auth: process.env.NOTION_TOKEN });\n\nexport const Post = defineDatabase(() => ({\n  name: \"Post\",\n  databaseId: \"ebb75e98746c4b00942380cd8e6c51e3\",\n  query: {\n    filter: {\n      property: \"Status\",\n      status: {\n        equals: \"Published\",\n      },\n    },\n  },\n  properties: {\n    date: {\n      name: \"Created time\",\n    },\n  },\n  computedFields: {\n    url: {\n      type: \"string\",\n      resolve: (post) => `/log/${post._id}`,\n    },\n  },\n}));\n\nexport default makeSource({\n  client,\n  databaseTypes: [Post],\n});\n"],
-  "mappings": ";AAAA,SAAS,YAAY,sBAAsB;AAC3C,YAAY,YAAY;AACxB,IAAM,SAAS,IAAW,cAAO,EAAE,MAAM,QAAQ,IAAI,aAAa,CAAC;AAE5D,IAAM,OAAO,eAAe,OAAO;AAAA,EACxC,MAAM;AAAA,EACN,YAAY;AAAA,EACZ,OAAO;AAAA,IACL,QAAQ;AAAA,MACN,UAAU;AAAA,MACV,QAAQ;AAAA,QACN,QAAQ;AAAA,MACV;AAAA,IACF;AAAA,EACF;AAAA,EACA,YAAY;AAAA,IACV,MAAM;AAAA,MACJ,MAAM;AAAA,IACR;AAAA,EACF;AAAA,EACA,gBAAgB;AAAA,IACd,KAAK;AAAA,MACH,MAAM;AAAA,MACN,SAAS,CAAC,SAAS,QAAQ,KAAK,GAAG;AAAA,IACrC;AAAA,EACF;AACF,EAAE;AAEF,IAAO,8BAAQ,WAAW;AAAA,EACxB;AAAA,EACA,eAAe,CAAC,IAAI;AACtB,CAAC;",
-  "names": []
-}

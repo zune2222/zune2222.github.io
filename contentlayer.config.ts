@@ -1,6 +1,6 @@
 import { defineDocumentType, makeSource } from "contentlayer/source-files";
 import rehypePrettyCode from "rehype-pretty-code";
-
+import remarkGfm from "remark-gfm";
 const rehypeOptions = {
   theme: "slack-dark",
   keepBackground: true,
