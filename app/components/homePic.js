@@ -35,9 +35,7 @@ export default function HomePic() {
       <div className="mt-10 flex w-full h-auto z-2 flex flex-col items-center justify-center">
         <CardHover className="cursor-pointer">
           <Link
-            href={
-              "https://zune2222.notion.site/Pak-Jun-Yi-2c6ae27311c94be48543fc00c0ea861a?pvs=4"
-            }
+            href={`https://zune2222.notion.site/Pak-Jun-Yi-2c6ae27311c94be48543fc00c0ea861a?pvs=4`}
             target="_blank"
             passHref
           >

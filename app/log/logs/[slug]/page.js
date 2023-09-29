@@ -1,19 +1,33 @@
 "use client";
 import { format, parseISO } from "date-fns";
-import { allPosts } from "contentlayer/generated";
+import { allDocuments } from "contentlayer/generated";
 import { appleFontL, appleFontSB } from "app/components/fontZip";
 import { useMDXComponent } from "next-contentlayer/hooks";
 import Giscus from "app/components/giscus";
 import { notFound } from "next/navigation";
 
-export async function generateStaticParams() {
-  return allPosts.map((post) => ({
-    slug: post._raw.flattenedPath,
-  }));
+export function generateStaticParams() {
+  return allDocuments.map(({ slug }) => ({ slug: slug.split("/") }));
 }
+function getDocFromParams({ params }) {
+  const slug = params.slug;
+  const post = allDocuments.find((doc) => {
+    console.log(doc.slug);
+    doc.slug === slug;
+  });
+
+  if (post) {
+    post.date = format(new Date(post.date), "MMMM dd. yyyy");
+  }
+
+  return post;
+}
+
 const PostLayout = ({ params }) => {
-  const post = allPosts.find((post) => post._raw.flattenedPath === params.slug);
-  if (!post) notFound();
+  const post = getDocFromParams({ params });
+  if (!post) {
+    notFound();
+  }
 
   const MDXContent = useMDXComponent(post.body.code);
   return (

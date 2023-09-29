@@ -11,5 +11,5 @@
     "**/*.jsx",
     ".next/types/**/*.js",
     ".contentlayer/generated"
-, "app/log/logs/[slug]/page.js"  ]
+  ]
 }

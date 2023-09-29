@@ -9,7 +9,7 @@ export default function Book({ title: title, url: url, date: date }) {
   }
   return (
     <CardHover className="cursor-pointer">
-      <Link href={url}>
+      <Link href={`${url}`}>
         <div className="flex toc-class pl-2 opacity-0 translate-y-6 bg-stone-200 shadow-2xl h-56 w-40 rounded drop-shadow-md">
           <div className="h-full w-5 bg-white "></div>
           <div className="flex-col">

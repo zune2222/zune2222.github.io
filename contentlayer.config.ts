@@ -21,7 +21,7 @@ export const Post = defineDocumentType(() => ({
       type: "string",
       resolve: parseSlug,
     },
-    url: {
+    href: {
       type: "string",
       resolve: (post) => `/log/logs/${post._raw.flattenedPath}`,
     },
