@@ -1,4 +1,3 @@
-"use client";
 import { format, parseISO } from "date-fns";
 import { allDocuments } from "contentlayer/generated";
 import { appleFontL, appleFontSB } from "app/components/fontZip";
@@ -6,29 +5,23 @@ import { useMDXComponent } from "next-contentlayer/hooks";
 import Giscus from "app/components/giscus";
 import { notFound } from "next/navigation";
 
-export function generateStaticParams() {
-  return allDocuments.map(({ slug }) => ({ slug: slug.split("/") }));
+export async function generateStaticParams() {
+  return allDocuments.map((post) => ({
+    slug: post._raw.flattenedPath,
+  }));
 }
-function getDocFromParams({ params }) {
-  const slug = params.slug;
-  const post = allDocuments.find((doc) => {
-    console.log(doc.slug);
-    doc.slug === slug;
-  });
-
-  if (post) {
-    post.date = format(new Date(post.date), "MMMM dd. yyyy");
-  }
-
-  return post;
-}
-
+export const generateMetadata = ({ params }) => {
+  const post = allDocuments.find(
+    (post) => post._raw.flattenedPath === params.slug
+  );
+  if (!post) throw new Error(`Post not found for slug: ${params.slug}`);
+  return { title: post.title };
+};
 const PostLayout = ({ params }) => {
-  const post = getDocFromParams({ params });
-  if (!post) {
-    notFound();
-  }
-
+  const post = allDocuments.find(
+    (post) => post._raw.flattenedPath === params.slug
+  );
+  if (!post) notFound();
   const MDXContent = useMDXComponent(post.body.code);
   return (
     <article
