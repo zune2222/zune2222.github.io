@@ -13,6 +13,9 @@ export const metadata = {
   icons: {
     icon: "/favicon.ico",
   },
+  base: {
+    href: "/",
+  },
 };
 
 export default function RootLayout({ children }) {

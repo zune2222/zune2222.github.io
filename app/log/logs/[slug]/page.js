@@ -10,13 +10,13 @@ export async function generateStaticParams() {
     slug: post._raw.flattenedPath,
   }));
 }
-export const generateMetadata = ({ params }) => {
-  const post = allDocuments.find(
-    (post) => post._raw.flattenedPath === params.slug
-  );
-  if (!post) throw new Error(`Post not found for slug: ${params.slug}`);
-  return { title: post.title };
-};
+// export const generateMetadata = ({ params }) => {
+//   const post = allDocuments.find(
+//     (post) => post._raw.flattenedPath === params.slug
+//   );
+//   if (!post) throw new Error(`Post not found for slug: ${params.slug}`);
+//   return { title: post.title };
+// };
 const PostLayout = ({ params }) => {
   const post = allDocuments.find(
     (post) => post._raw.flattenedPath === params.slug
