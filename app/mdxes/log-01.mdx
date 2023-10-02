@@ -1,0 +1,207 @@
+---
+title: 군대에서 코딩하기 (WSL2 - VS code-server)
+date: 2023-09-10
+description: code-server로 아이패드 활용하기
+---
+
+### goorm IDE를 포기한 이유
+
+군대에 아이패드 반입을 하고 개발 환경을 세팅하며
+
+‘goorm IDE’를 사용하다 ‘code-server’로 개발 환경을 바꿨다.
+
+많은 이유가 있지만, 결국 구름을 포기한 큰 원인은 성능이었다.
+
+![구름결제](/log-01-img/goormPurchase.jpeg)
+![구름결제목록](/log-01-img/goormList.jpeg)
+
+Student요금제로 4개월 가량을 사용했는데, 프로젝트의 볼륨이 점점 커지다 보니 코드 몇 줄만 짜도 서버가 멈춰버리는 상황이 자주 발생했다. 😭
+
+그렇다고 CPU 성능만 보고 프리미엄을 결제하기엔… 나 거지인걸…😅
+
+싸지방에서 코딩을 할 땐 그래도 어쩔 수 없다 생각하고 사용했지만, 아이패드를 가져오고 나서는 개발 환경을 세팅해두고 사용할 수 있으니 괜찮겠다 싶어 ‘code-server‘를 사용하기로 마음 먹었다!
+
+---
+
+### 왜 ‘code-server’였나?
+
+집에 있는 컴퓨터가 너무 아까웠다. 싸지방 컴퓨터는 크롬 탭 몇 개만 열어도 멈추기 부지기수.
+
+인터넷도… 느려… 청소는 하는 건지도 모르겠는 싸지방…
+
+근데 6월이었나… 7월이었나… 시범 부대로 휴대폰을 아침점호 종료부터 저녁점호 시작전 까지 사용할 수 있게 되었다. 그러면서 태블릿 반입도 가능하다는 것을 알게되었다. 규정을 찾아보니 실제로 태블릿은 시범 부대와 관계 없이 반입이 가능하다 ! 🫨 ~~공군만 가능한 줄 알았는데~~
+
+그렇게 코딩을 위해 집에 있던 아이패드를 가져오고, 매직키보드도 중고로 구매했다.
+
+코딩을 위해서라면…!! ~~결국 매직키보드를 살 운명이었던 앱등이~~
+
+그래서 ‘Jump Desktop’을 설치하고, 아이패드에도 설치해줬다.
+
+![아이패드용 점프데스크탑](/log-01-img/ipadJump.jpeg)
+
+가끔 컴퓨터가 이상할 때 ‘Jump Desktop’으로 들어가서 확인하는 용도와, ~~피파온라인4 감독모드 돌리기~~
+
+데스크탑이 필요할 때 사용하는 용도로 사용한다.
+
+---
+
+### WSL2
+
+개발할 때 항상 맥을 사용했던터라, 리눅스 계열의 OS를 선호한다. 입대 전에 맥을 팔고 윈도우로 개발을 하기 위해서 WSL2을 사용해 개발 환경을 다 설치해둬서 따로 WSL2 설치는 진행하지 않았어도 됐다.
+
+근데 결국엔 이것도 불편해서 해킨토시를 했었다 ㅎ 맥의 노예 ㅠ 😓
+
+---
+
+### Code-server 설치
+
+설치는 어떻게든 하다 보면 될 거다. 설치는… 어렵지 않은 부분이니까.
+
+wget으로 설치를 해도 되고, npm으로 설치하는 방법도 있다. 선호하는 방법을 선택하면 된다.
+
+**code-server 설치**
+
+```bash
+curl -fsSL https://code-server.dev/install.sh | sh
+```
+
+설치를 하면 `~/.config/code-server/config.yaml` 파일이 생긴다.
+
+이를 수정해야하는데,
+
+```bash
+bind-addr: (설정할 ip):(설정할 포트)
+auth: (인증 사용 password/none)
+password: (패스워드)
+cert: (true/false)
+```
+
+사용할 포트를 넣어주고, 사용할 비밀번호를 넣어주면 된다.
+
+`cert`는 https 통신 설정 옵션인데, true로 두면 된다. ~~안되면 바꿔보는 걸로 ㅎ…~~
+
+`code-server` 명령어로 실행할 수 있지만 귀찮다.
+
+**서비스 등록으로 자동 실행 시키도록 하자.**
+
+```bash
+# 서비스 등록 (최초1회 실행)
+sudo systemctl enable --now code-server@$USER
+
+# code-server 실행
+sudo systemctl start code-server@$USER
+
+# code-server 중지
+sudo systemctl stop code-server@$USER
+
+# code-server 재시작
+sudo systemctl restart code-server@$USER
+
+# code-server 상태
+sudo systemctl status code-server@$USER
+```
+
+이렇게 하고 `localhost:(설정한 포트)`에 접속하면
+
+![code-server 비밀번호 입력창](/log-01-img/codeserverPwd.jpeg)
+
+감격스러운 화면이 보일 것이다.
+
+그러나 우리는 아이패드에서 ‘code-sever’를 쓰고 싶으니 외부에서 접속이 가능하도록 해줘야 한다.
+
+제일 큰 문제는 WSL2에서 ‘code-server’를 열었기 때문에 윈도우에서는 접속이 가능하지만, 단순히 포트를 열어줬다고 해서 외부에서 접속을 할 수 없다.
+
+하지만 세상엔 천재는 많고 해결 방법은 언제나 있다.
+
+1. **관리자 모드로 파워셀을 실행**
+2. **파워셀에 스크리브 실행시 외부 코드를 수행할 권한이 있는지 확인하기**
+
+```powershell
+Set-ExecutionPolicy RemoteSigned
+```
+
+그냥 이 명령어로 수행권한을 주자.
+
+```bash
+$remoteport = bash.exe -c "ifconfig eth0 | grep 'inet '"
+$found = $remoteport -match '\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}';
+
+if( $found ){
+  $remoteport = $matches[0];
+} else{
+  echo "The Script Exited, the ip address of WSL 2 cannot be found";
+  exit;
+}
+
+#[Ports]
+#All the ports you want to forward separated by coma
+$ports=@(80, 1000,2000,3000,5000);
+
+#[Static ip]
+#You can change the addr to your ip config to listen to a specific address
+$addr='0.0.0.0';
+$ports_a = $ports -join ",";
+
+#Remove Firewall Exception Rules
+iex "Remove-NetFireWallRule -DisplayName 'WSL 2 Firewall Unlock' ";
+
+#adding Exception Rules for inbound and outbound Rules
+iex "New-NetFireWallRule -DisplayName 'WSL 2 Firewall Unlock' -Direction Outbound -LocalPort $ports_a -Action Allow -Protocol TCP";
+iex "New-NetFireWallRule -DisplayName 'WSL 2 Firewall Unlock' -Direction Inbound -LocalPort $ports_a -Action Allow -Protocol TCP";
+
+for( $i = 0; $i -lt $ports.length; $i++ ){
+  $port = $ports[$i];
+  iex "netsh interface portproxy delete v4tov4 listenport=$port listenaddress=$addr";
+  iex "netsh interface portproxy add v4tov4 listenport=$port listenaddress=$addr connectport=$port connectaddress=$remoteport";
+}
+```
+
+이후 이 파일을 `forward.ps1`이나 `test.ps1` 등등 원하는 이름으로 만든다.
+
+중간에 `Ports` 부분을 수정해서 원하는 포트를 연결 시켜주도록 하자.
+
+파워쉘에서 실행 시켜야 하니 찾기 쉬운 곳에 두기로 하자!
+
+```bash
+.\forward.ps1
+```
+
+실행을 시키고, 공유기에서 포트포워딩을 완료 한 다음 외부 아이피로 접속이 되는 지 확인 해보자.
+
+된다면 다행이지만, 안 될 때가 있다.
+
+```bash
+netsh interface portproxy show v4tov4
+```
+
+이 명령어로 아까 실행한 파일이 잘 실행 되는지 확인을 할 수 있을 뿐더러
+
+설정한 포트로 진입이 안된다면
+
+```bash
+netsh interface portproxy reset
+```
+
+리셋 이후 포트를 바꿔가며 되는 포트를 찾아보자.
+
+사실 이게 올바른 해결 방법은 아닌 거 같은데, 내가 집에서 작업하는 것도 아니고
+
+원격으로 하는건데, 뭐 가라로라도 해서 되면 좋은 거 아닐까?
+
+아무튼 그렇게 해서 아이패드로 접속을 하면 … !!
+
+![접속 성공](/log-01-img/codeserverSuccess.jpeg)
+
+아이고 잘 된다.
+
+사진 처럼 앱 처럼 사용 하고 싶다면,
+
+![홈화면에추가](/log-01-img/homePageAdd.jpeg)
+
+이렇게 홈 화면에 추가해주자.
+
+![독에 들어간 아이콘](/log-01-img/dockCodeserver.jpeg)
+
+독에 넣어주면 **완-벽**
+
+이제 즐거운 개인정비 시간을 보낼 수 있다. 다들 화이팅!
