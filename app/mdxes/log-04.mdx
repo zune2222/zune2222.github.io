@@ -1,0 +1,68 @@
+---
+title:SWC Issue
+description:한숨 쉬는 버그 해결
+date:2023-10-02
+---
+
+정말 이 버그 때문에 시간을 많이 잡아먹었는데, 결국 해결을 했다!
+
+![console log](/log-04-img/console.log.jpeg)
+_~~SyntaxError : Unexpected token ‘하‘, …~~_
+
+가만 보면 버그도 ‘하’ 하며 한숨을 쉰다.
+
+나도 그랬다…
+
+버그가 발생하는 경위는,
+
+`contentlayer.config.ts`
+
+```jsx
+export const Post = defineDocumentType(() => ({
+  name: "Post",
+  filePathPattern: `**/*.mdx`,
+  contentType: "mdx",
+  fields: {
+    title: { type: "string", required: true },
+    date: { type: "date", required: true },
+    description: { type: "string", required: true },
+  }, ...
+```
+
+contentType을 mdx로 바꾸고
+
+rehype 관련 플러그인을 적용시키면 오류가 나기 시작했다.
+
+뭐가 문제일까, 플러그인도 다 지워보고 mdx파일도 다 지워보고 해봤다.
+
+mdx파일이 없으면 오류가 나질 않긴 한다 ㅋㅋ
+
+_~~블로그 글 없는 블로그 완성 타다~~_
+
+그러면 안되니까… mdx를 포기하고 md를 쓰고, rehype 관련 플로그인을포기해야하나 했다…
+
+그러던 중 !!
+
+https://yiyb-blog.vercel.app/posts/nextjs-contentlayer-blog
+
+찾아버렸다. 찾아버렸어 !! 진짜 감사합니다 !!
+
+`next.config.js`의 `swcMinify` 속성을 **false** 로 바꾸면 된다.
+
+우와 진짜 대박 감사합니다. 감사합니다.
+
+근데 swcMinify는 뭘까?
+
+### 1. swcMinifty
+
+swcMinifty이란 Terser와 비슷한 역할을 한다고 생각하면 된다. Terser의 역할은 필요없는 공백이나, 주석을 삭제하여 용량을 줄이고, 해당 스크립트를 해석할 수 없도록 암호화 하는 역할을 한다고 할 수 있다. 기본적으로 React나 Next는 기본 설정을 통해 build 파일을 만들면서, Terser의 역할을 할 수 있다. 이러한 역할에 대한 설정을 handling 할 수 있도록 하는 것이 swcMinifty라고 할 수 있다. 이러한 역할에 대한 용어를 Minification이라고 한다. Minification에 대해 조금 더 알아보자.
+
+### Minification
+
+minification이란 스크립트 파일과 웹 페이지에 대한 코드를 최소화하는 것이다. 이를 통해 웹페이지의 로딩 시간을 줄이고, 속도와 접근성을 향상시키면서 더 나은 사용자 경험(UX)를 이끌어 낼 수 있다.
+
+(https://han-py.tistory.com/506)
+
+최적화 관련된 옵션인듯 하다. 못 쓰는게 아쉽긴 하지만, 오류뜨는 것 보단…!
+
+아 해결 해서 다행이다 ~~ 😚
