@@ -9,10 +9,7 @@ import {
   useChain,
   useSpringRef,
 } from "@react-spring/web";
-import Lottie from "react-lottie-player";
-import homeLottie from "../../src/lottie/homeLottie.json";
 import logo from "../../src/img/logo.png";
-import logIcon from "../../src/img/logIcon.png";
 import logoTranparency from "../../src/img/logoTranparency.png";
 import daisyBooks from "../../src/img/daisyBooks.png";
 import { usePathname } from "next/navigation";
@@ -96,6 +93,7 @@ export default function TravelButton() {
                 {currentMode ? (
                   <Link href={`${item.link}`}>
                     <Image
+                      placeholder="blur"
                       alt="travleButtonImage"
                       src={item.src}
                       className={item.class}
@@ -103,6 +101,7 @@ export default function TravelButton() {
                   </Link>
                 ) : (
                   <Image
+                    placeholder="blur"
                     alt="travelButtonImage"
                     src={item.src}
                     className={item.class}
