@@ -23,6 +23,7 @@ export default function Book({ title: title, url: url, date: date }) {
             </div>
 
             <Image
+              placeholder="blur"
               alt="bookLogo"
               src={bookLogo}
               className="w-30 h-30 pr-1"
