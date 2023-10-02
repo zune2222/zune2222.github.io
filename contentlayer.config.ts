@@ -1,6 +1,7 @@
 import { defineDocumentType, makeSource } from "contentlayer/source-files";
 import rehypePrettyCode from "rehype-pretty-code";
-import remarkGfm from "remark-gfm";
+import rehypeSlug from "rehype-slug";
+import remakrGfm from "remark-gfm";
 const rehypeOptions = {
   theme: "slack-dark",
   keepBackground: true,
@@ -27,6 +28,6 @@ export default makeSource({
   contentDirPath: "app/mdxes/",
   documentTypes: [Post],
   mdx: {
-    rehypePlugins: [[rehypePrettyCode, rehypeOptions]],
+    rehypePlugins: [rehypeSlug, [rehypePrettyCode, rehypeOptions]],
   },
 });
