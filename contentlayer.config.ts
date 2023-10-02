@@ -1,3 +1,4 @@
+import { data } from "autoprefixer";
 import { defineDocumentType, makeSource } from "contentlayer/source-files";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
@@ -6,10 +7,9 @@ const rehypeOptions = {
   theme: "slack-dark",
   keepBackground: true,
 };
-
-export const Post = defineDocumentType(() => ({
-  name: "Post",
-  filePathPattern: `**/*.mdx`,
+export const Log = defineDocumentType(() => ({
+  name: "Log",
+  filePathPattern: `log/**/*.mdx`,
   contentType: "mdx",
   fields: {
     title: { type: "string", required: true },
@@ -17,16 +17,35 @@ export const Post = defineDocumentType(() => ({
     description: { type: "string", required: true },
   },
   computedFields: {
-    url: {
+    href: {
       type: "string",
-      resolve: (post) => `/log/logs/${post._raw.flattenedPath}`,
+      resolve: (post) =>
+        `/posts/${post._raw.flattenedPath.split("/").slice(1)}`,
+    },
+  },
+}));
+
+export const Memory = defineDocumentType(() => ({
+  name: "Memory",
+  filePathPattern: `memory/**/*.mdx`,
+  contentType: "mdx",
+  fields: {
+    title: { type: "string", required: true },
+    date: { type: "date", required: true },
+    description: { type: "string", required: true },
+  },
+  computedFields: {
+    href: {
+      type: "string",
+      resolve: (post) =>
+        `/posts/${post._raw.flattenedPath.split("/").slice(1)}`,
     },
   },
 }));
 
 export default makeSource({
-  contentDirPath: "app/mdxes/",
-  documentTypes: [Post],
+  contentDirPath: "mdxes",
+  documentTypes: [Log, Memory],
   mdx: {
     rehypePlugins: [rehypeSlug, [rehypePrettyCode, rehypeOptions]],
   },

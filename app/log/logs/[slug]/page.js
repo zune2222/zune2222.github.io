@@ -7,7 +7,7 @@ import { notFound } from "next/navigation";
 
 export async function generateStaticParams() {
   return allDocuments.map((post) => ({
-    slug: post._raw.flattenedPath,
+    slug: post._raw.flattenedPath.replace("log/", ""),
   }));
 }
 const PostLayout = ({ params }) => {

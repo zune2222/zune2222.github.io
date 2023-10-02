@@ -6,6 +6,9 @@ import Giscus from "app/components/giscus";
 import { notFound } from "next/navigation";
 
 export async function generateStaticParams() {
+    allDocuments.map(post=>{
+        console.log(post)
+    })
   return allDocuments.map((post) => ({
     slug: post._raw.flattenedPath,
   }));
