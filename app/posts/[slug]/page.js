@@ -5,18 +5,20 @@ import { useMDXComponent } from "next-contentlayer/hooks";
 import Giscus from "app/components/giscus";
 import { notFound } from "next/navigation";
 
-export async function generateStaticParams() {
-    allDocuments.map(post=>{
-        console.log(post)
-    })
-  return allDocuments.map((post) => ({
-    slug: post._raw.flattenedPath,
-  }));
+export function generateStaticParams() {
+  allDocuments.map(({ slug }) => {});
+  return allDocuments.map(({ slug }) => ({ slug: slug }));
 }
+
+function getDocFromParams({ params }) {
+  const slug = params.slug;
+  const post = allDocuments.find((doc) => doc.slug === slug);
+
+  return post;
+}
+
 const PostLayout = ({ params }) => {
-  const post = allDocuments.find(
-    (post) => post._raw.flattenedPath === params.slug
-  );
+  const post = getDocFromParams({ params });
   if (!post) notFound();
   const MDXContent = useMDXComponent(post.body.code);
   return (

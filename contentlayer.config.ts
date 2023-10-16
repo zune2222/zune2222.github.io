@@ -1,11 +1,29 @@
 import { data } from "autoprefixer";
-import { defineDocumentType, makeSource } from "contentlayer/source-files";
+import {
+  type ComputedFields,
+  defineDocumentType,
+  makeSource,
+} from "contentlayer/source-files";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
 import remakrGfm from "remark-gfm";
+
+export const parseSlug = (doc) => {
+  return doc._raw.flattenedPath.split("/").slice(1).join("/");
+};
 const rehypeOptions = {
   theme: "slack-dark",
   keepBackground: true,
+};
+const computedFields: ComputedFields = {
+  slug: {
+    type: "string",
+    resolve: parseSlug,
+  },
+  href: {
+    type: "string",
+    resolve: (doc) => `/posts/${parseSlug(doc)}`,
+  },
 };
 export const Log = defineDocumentType(() => ({
   name: "Log",
@@ -16,13 +34,7 @@ export const Log = defineDocumentType(() => ({
     date: { type: "date", required: true },
     description: { type: "string", required: true },
   },
-  computedFields: {
-    href: {
-      type: "string",
-      resolve: (post) =>
-        `/posts/${post._raw.flattenedPath.split("/").slice(1)}`,
-    },
-  },
+  computedFields,
 }));
 
 export const Memory = defineDocumentType(() => ({
@@ -34,13 +46,7 @@ export const Memory = defineDocumentType(() => ({
     date: { type: "date", required: true },
     description: { type: "string", required: true },
   },
-  computedFields: {
-    href: {
-      type: "string",
-      resolve: (post) =>
-        `/posts/${post._raw.flattenedPath.split("/").slice(1)}`,
-    },
-  },
+  computedFields,
 }));
 
 export default makeSource({

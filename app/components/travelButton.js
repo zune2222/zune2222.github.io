@@ -12,6 +12,7 @@ import {
 import logo from "../../src/img/logo.png";
 import logoTranparency from "../../src/img/logoTranparency.png";
 import daisyBooks from "../../src/img/daisyBooks.png";
+import memory from "../../src/img/memoryParis.png";
 import { usePathname } from "next/navigation";
 export default function TravelButton() {
   const [currentMode, setCurrentMode] = useState(false);
@@ -53,6 +54,12 @@ export default function TravelButton() {
     {
       link: "/log",
       src: daisyBooks,
+      class: "w-12 h-12 rounded-full bg-red-50",
+      key: 2,
+    },
+    {
+      link: "/memory",
+      src: memory,
       class: "w-12 h-12 rounded-full bg-red-50",
       key: 2,
     },

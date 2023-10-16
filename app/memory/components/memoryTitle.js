@@ -13,8 +13,9 @@ export default function MemoryTitle() {
           id="toc-header"
           className={`toc-class translate-y-6 opacity-0 ${appleFontB.className} text-gray-500 mt-5`}
         >
-          <div>네가 있는 곳으로 I'll move on</div>
-          <div>Yellow cab plane bus or Uber🎵</div>
+          <div>Can I walk with you or have a tea with you?</div>
+          <div>Your scent makes me feel like I live in Paris</div>
+          <div>Can I love you? Giving my all to you?🎵</div>
         </div>
       </div>
     </div>
