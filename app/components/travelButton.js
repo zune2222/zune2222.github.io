@@ -13,6 +13,7 @@ import logo from "../../src/img/logo.png";
 import logoTranparency from "../../src/img/logoTranparency.png";
 import daisyBooks from "../../src/img/daisyBooks.png";
 import memory from "../../src/img/memoryParis.png";
+import parisTranparency from "../../src/img/memoryParisTranparency.png";
 import { usePathname } from "next/navigation";
 export default function TravelButton() {
   const [currentMode, setCurrentMode] = useState(false);
@@ -26,6 +27,9 @@ export default function TravelButton() {
     }
     if (pathname === "/log") {
       setCurrentPagePic(daisyBooks);
+    }
+    if (pathname === "/memory") {
+      setCurrentPagePic(parisTranparency);
     }
   }, [pathname]);
   const springs = useSpring(
