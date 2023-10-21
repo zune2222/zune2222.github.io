@@ -6,7 +6,7 @@ description: App Router는 항상 달라
 
 `gtag.js`
 
-```
+```jsx
 export const GA_TRACKING_ID = "HereYourId!!!";
 
 export const pageview = (url) => {
@@ -22,12 +22,11 @@ export const event = ({ action, category, label, value }) => {
     value: value,
   });
 };
-
 ```
 
-`app/~/googleAnalytics.j`
+`app/~/googleAnalytics.js`
 
-```
+```jsx
 "use client";
 
 import Script from "next/script";

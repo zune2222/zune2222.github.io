@@ -1,0 +1,56 @@
+---
+title: NextJS 13 sitemap 생성,검색엔진 등록
+date: 2023-10-21
+description: 조금 다른 부분이 있다니까요
+---
+
+### sitemap 생성
+
+`next-sitemap.config.js`
+
+```jsx
+/** @type {import('next-sitemap').IConfig} */
+module.exports = {
+  siteUrl: "https://zune2222.github.io",
+  changefreq: "daily",
+  priority: 0.7,
+  sitemapSize: 7000,
+  generateRobotsTxt: true,
+  exclude: [],
+};
+```
+
+`package.json`
+
+```jsx
+{
+  "scripts": {
+    "build": "next build && next-sitemap && next export",
+    ...
+  }
+}
+```
+
+이후 public 폴더에 생기는 파일들을 .gitignore 에 추가 해주도록 합시다.
+
+```
+/public/robots.txt
+/public/sitemap*.xml
+```
+
+---
+
+### 검색엔진 등록
+
+Google Search Console에 등록을 해봅시다.
+
+사이트에 들어가면 Meta Tag를 등록하라고 할텐데,
+
+```jsx
+export const metadata = {
+    ...
+  verification: { google: "..." },
+};
+```
+
+이런 식으로 등록하면 됩니다.
