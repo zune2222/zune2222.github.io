@@ -16,6 +16,7 @@ export const metadata = {
   base: {
     href: "/",
   },
+  verification: { google: "zu1Uz4cuZpS_IKi_I0Dll6vc11SePw-F_XQZRMDsc-c" },
 };
 
 export default function RootLayout({ children }) {
