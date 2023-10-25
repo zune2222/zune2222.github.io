@@ -1,4 +1,4 @@
-import logBooks from "../../../src/img/memoryLogo.png";
+import memoryTower from "../../../src/img/memoryLogo.png";
 import Image from "next/image";
 export default function MemoryPic() {
   return (
@@ -7,9 +7,9 @@ export default function MemoryPic() {
         <div className="flex z-0">
           <Image
             placeholder="blur"
-            alt="BooksLog"
+            alt="parisTower"
             className="h-auto w-full"
-            src={logBooks}
+            src={memoryTower}
           ></Image>
         </div>
       </div>
