@@ -42,7 +42,7 @@ const GoogleAnalytics = () => {
       <Script
         id="gtag-init"
         strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
+        dangerouslySetInnerHTML={% raw %}
           __html: `
                       window.dataLayer = window.dataLayer || [];
                       function gtag(){dataLayer.push(arguments);}
@@ -51,7 +51,7 @@ const GoogleAnalytics = () => {
                       page_path: window.location.pathname,
                       });
                     `,
-        }}
+        {% endraw %}
       />
     </>
   );
