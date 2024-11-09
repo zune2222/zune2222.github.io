@@ -29,9 +29,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ko">
       <body className={appleFontL.className}>
-        <GoogleAnalytics />
-        <Wrap>{children}</Wrap>
-        <CopyRightFooter />
+        {/* <GoogleAnalytics /> */}
+        {/* <Wrap>{children}</Wrap> */}
+        {children}
+        {/* <CopyRightFooter /> */}
       </body>
     </html>
   );
