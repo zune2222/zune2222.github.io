@@ -10,6 +10,7 @@ export default function MemoryPic() {
             alt="BooksLog"
             className="h-auto w-full"
             src={logBooks}
+            priority
           ></Image>
         </div>
       </div>

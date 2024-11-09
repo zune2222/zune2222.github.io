@@ -35,6 +35,7 @@ export default function HomePic() {
           alt="main logo"
           className="h-auto w-full"
           src={mainLogo}
+          priority
         ></Image>
       </div>
       <div className="mt-10 flex w-full h-auto z-2 flex flex-col items-center justify-center">
