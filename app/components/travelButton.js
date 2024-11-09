@@ -91,6 +91,9 @@ export default function TravelButton() {
   const handleClick = () => {
     setCurrentMode(!currentMode);
   };
+  const handleExternalLinkClick = (url) => {
+    window.open(url, "_blank");
+  };
   return (
     <div className="z-50 fixed w-full top-0">
       <div className="z-100 flex flex-col p-3 justify-start items-center">
@@ -109,14 +112,25 @@ export default function TravelButton() {
             {transitions((style, item) => (
               <animated.div style={{ ...style }}>
                 {currentMode ? (
-                  <Link href={`${item.link}`}>
-                    <Image
-                      placeholder="blur"
-                      alt="travleButtonImage"
-                      src={item.src}
-                      className={item.class}
-                    />
-                  </Link>
+                  item.link.startsWith("http") ? (
+                    <div onClick={() => handleExternalLinkClick(item.link)}>
+                      <Image
+                        placeholder="blur"
+                        alt="travelButtonImage"
+                        src={item.src}
+                        className={item.class}
+                      />
+                    </div>
+                  ) : (
+                    <Link href={`${item.link}`}>
+                      <Image
+                        placeholder="blur"
+                        alt="travleButtonImage"
+                        src={item.src}
+                        className={item.class}
+                      />
+                    </Link>
+                  )
                 ) : (
                   <Image
                     placeholder="blur"
