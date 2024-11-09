@@ -68,12 +68,6 @@ export default function TravelButton() {
       class: "w-12 h-12 rounded-full bg-red-50",
       key: 3,
     },
-    {
-      link: "https://python-bitcoin-auto-trading.web.app/",
-      src: coin,
-      class: "w-12 h-12 rounded-full bg-red-50",
-      key: 4,
-    },
   ];
   const transApi = useSpringRef();
   const transitions = useTransition(
@@ -90,11 +84,6 @@ export default function TravelButton() {
   useChain([springApi, transApi], [0, 0.2]);
   const handleClick = () => {
     setCurrentMode(!currentMode);
-  };
-  const handleExternalLinkClick = (url) => {
-    if (typeof window !== "undefined") {
-      window.open(url, "_blank");
-    }
   };
   return (
     <div className="z-50 fixed w-full top-0">
@@ -114,25 +103,14 @@ export default function TravelButton() {
             {transitions((style, item) => (
               <animated.div style={{ ...style }}>
                 {currentMode ? (
-                  item.link.startsWith("http") ? (
-                    <div onClick={() => handleExternalLinkClick(item.link)}>
-                      <Image
-                        placeholder="blur"
-                        alt="travelButtonImage"
-                        src={item.src}
-                        className={item.class}
-                      />
-                    </div>
-                  ) : (
-                    <Link href={`${item.link}`}>
-                      <Image
-                        placeholder="blur"
-                        alt="travleButtonImage"
-                        src={item.src}
-                        className={item.class}
-                      />
-                    </Link>
-                  )
+                  <Link href={`${item.link}`}>
+                    <Image
+                      placeholder="blur"
+                      alt="travleButtonImage"
+                      src={item.src}
+                      className={item.class}
+                    />
+                  </Link>
                 ) : (
                   <Image
                     placeholder="blur"
