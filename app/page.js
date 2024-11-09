@@ -1,12 +1,7 @@
 "use client";
 import HomePic from "./components/homePic";
 import HomeIntro from "./components/homeIntro";
-import CopyRightFooter from "./components/copyrightFooter";
-import dynamic from "next/dynamic";
-
-const GoogleAnalytics = dynamic(() => import("./components/googleAnalytics"), {
-  ssr: false,
-});
+// import CopyRightFooter from "./components/copyrightFooter";
 export default function Home() {
   return (
     <>

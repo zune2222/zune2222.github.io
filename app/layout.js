@@ -2,11 +2,7 @@ import "./globals.css";
 import { appleFontL } from "./components/fontZip";
 import Wrap from "./components/wrap";
 import CopyRightFooter from "./components/copyrightFooter";
-
-import dynamic from "next/dynamic";
-const GoogleAnalytics = dynamic(() => import("./components/googleAnalytics"), {
-  ssr: false,
-});
+import GoogleAnalytics from "./components/googleAnalytics";
 export const metadata = {
   title: "zun2log",
   description: "Pak Jun Yi's blog",
