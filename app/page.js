@@ -5,8 +5,8 @@ import HomeIntro from "./components/homeIntro";
 export default function Home() {
   return (
     <>
-      {/* <HomePic />
-      <HomeIntro /> */}
+      <HomePic />
+      <HomeIntro />
     </>
   );
 }
