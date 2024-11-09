@@ -92,7 +92,9 @@ export default function TravelButton() {
     setCurrentMode(!currentMode);
   };
   const handleExternalLinkClick = (url) => {
-    window.open(url, "_blank");
+    if (typeof window !== "undefined") {
+      window.open(url, "_blank");
+    }
   };
   return (
     <div className="z-50 fixed w-full top-0">
