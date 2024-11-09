@@ -14,7 +14,7 @@ import logoTranparency from "../../src/img/logoTranparency.png";
 import daisyBooks from "../../src/img/daisyBooks.png";
 import memory from "../../src/img/memoryParis.png";
 import parisTranparency from "../../src/img/memoryParisTranparency.png";
-import coin from "../../src/img/coin.png";
+// import coin from "../../src/img/coin.png";
 import { usePathname } from "next/navigation";
 export default function TravelButton() {
   const [currentMode, setCurrentMode] = useState(false);
