@@ -2,12 +2,13 @@ import { format, parseISO } from "date-fns";
 import { allDocuments } from "contentlayer/generated";
 import { appleFontL, appleFontSB } from "app/components/fontZip";
 import { useMDXComponent } from "next-contentlayer/hooks";
-import Giscus from "app/components/giscus";
+import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
 
+const Giscus = dynamic(() => import("app/components/giscus"), { ssr: false });
+
 export function generateStaticParams() {
-  allDocuments.map(({ slug }) => {});
-  return allDocuments.map(({ slug }) => ({ slug: slug }));
+  return allDocuments.map(({ slug }) => ({ slug }));
 }
 
 function getDocFromParams({ params }) {
@@ -21,6 +22,7 @@ const PostLayout = ({ params }) => {
   const post = getDocFromParams({ params });
   if (!post) notFound();
   const MDXContent = useMDXComponent(post.body.code);
+
   return (
     <article
       className={`${appleFontL.className} prose lg:prose-xl mt-20 mx-auto max-w-4xl py-8`}
