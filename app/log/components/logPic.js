@@ -3,8 +3,8 @@ import Image from "next/image";
 export default function LogPic() {
   return (
     <>
-      <div className="aspect-video flex bg-red-50 flex-row w-full z-1 h-auto">
-        <div className="mt-5 flex z-0">
+      <div className="flex-row w-full z-1 h-auto">
+        <div className="flex z-0">
           <Image
             placeholder="blur"
             alt="BooksLog"
