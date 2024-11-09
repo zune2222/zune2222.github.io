@@ -7,7 +7,7 @@ export default function Wrap({ children }) {
   const pathname = usePathname();
   return (
     <>
-      {/* <TravelButton /> */}
+      <TravelButton />
       <div ref={rootRef}>{children}</div>
     </>
   );
