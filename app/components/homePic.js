@@ -34,11 +34,21 @@ class Particle {
 
     // 구름 파티클을 위한 추가 속성
     if (type === "cloud") {
-      this.radius = Math.random() * 50 + 40;
-      this.speed = Math.random() * 0.2 - 0.1;
-      this.opacity = Math.random() * 0.3 + 0.2;
+      this.radius = Math.random() * 40 + 30; // 약간 더 작게
+      this.speed = Math.random() * 0.15 - 0.075; // 더 천천히
+      this.opacity = Math.random() * 0.2 + 0.15; // 더 투명하게
       this.originalOpacity = this.opacity;
       this.y = Math.random() * (canvasHeight / 3);
+      // 구름의 모양을 위한 추가 속성
+      this.subClouds = [
+        { x: 0, y: 0, r: this.radius }, // 메인 구름
+        { x: -this.radius * 0.5, y: -this.radius * 0.2, r: this.radius * 0.7 },
+        { x: this.radius * 0.5, y: -this.radius * 0.3, r: this.radius * 0.6 },
+        { x: -this.radius * 0.8, y: -this.radius * 0.1, r: this.radius * 0.5 },
+        { x: this.radius * 0.8, y: this.radius * 0.1, r: this.radius * 0.6 },
+        { x: this.radius * 0.2, y: this.radius * 0.15, r: this.radius * 0.7 },
+        { x: -this.radius * 0.3, y: this.radius * 0.15, r: this.radius * 0.6 },
+      ];
     }
 
     if (type === "sun") {
@@ -65,30 +75,20 @@ class Particle {
     }
 
     if (type === "star") {
-      this.radius = Math.random() * 1.5 + 0.5; // 더 작은 별들
+      this.radius = Math.random() * 1 + 0.3; // 더 작은 별
       this.originalRadius = this.radius;
       this.speed = Math.random() * 0.2 + 0.1;
-      this.opacity = Math.random() * 0.5 + 0.2; // 더 은은하게
+      this.opacity = Math.random() * 0.4 + 0.1; // 더 은은하게
       this.originalOpacity = this.opacity;
-      this.twinkleSpeed = Math.random() * 0.01 + 0.005; // 더 천천히 반짝이도록
+      this.twinkleSpeed = Math.random() * 0.008 + 0.002; // 더욱 천천히 반짝이도록
       this.twinklePhase = Math.random() * Math.PI * 2;
-      this.glowSize = Math.random() * 4 + 3; // 더 큰 빛나는 효과
-      // 더 넓은 영역에 배치
+      this.glowSize = Math.random() * 2 + 1.5; // 더 작은 빛나는 효과
       this.y = Math.random() * canvasHeight * 0.9;
-      // 색상 랜덤 선택 (흰색 위주로, 가끔 다른 색상)
-      const colors = [
-        [255, 255, 255], // 흰색 (70% 확률)
-        [255, 255, 255],
-        [255, 255, 255],
-        [255, 255, 255],
-        [255, 255, 255],
-        [255, 255, 255],
-        [255, 255, 255],
-        [200, 220, 255], // 연한 파랑 (10% 확률)
-        [255, 255, 200], // 연한 노랑 (10% 확률)
-        [255, 200, 220], // 연한 분홍 (10% 확률)
-      ];
-      this.color = colors[Math.floor(Math.random() * colors.length)];
+      // 대부분 흰색으로
+      this.color =
+        Math.random() > 0.1
+          ? [255, 255, 255] // 90% 확률로 흰색
+          : [255, 255, Math.random() > 0.5 ? 220 : 200]; // 10% 확률로 약간 노란빛이나 푸른빛
     }
   }
 
@@ -261,42 +261,62 @@ class Particle {
     }
 
     if (this.type === "cloud") {
-      // 구름 모양 그리기
       const x = this.x;
       const y = this.y;
-      const r = this.radius;
 
-      // 구름 그라데이션 생성
-      const gradient = ctx.createRadialGradient(x, y, 0, x, y, r);
-      gradient.addColorStop(0, `rgba(255, 255, 255, ${this.opacity + 0.1})`);
-      gradient.addColorStop(0.5, `rgba(255, 255, 255, ${this.opacity})`);
-      gradient.addColorStop(1, `rgba(255, 255, 255, ${this.opacity - 0.1})`);
+      // 구름의 외부 빛나는 효과
+      const outerGlow = ctx.createRadialGradient(
+        x,
+        y,
+        0,
+        x,
+        y,
+        this.radius * 1.5
+      );
+      outerGlow.addColorStop(0, `rgba(255, 255, 255, ${this.opacity * 0.3})`);
+      outerGlow.addColorStop(1, "rgba(255, 255, 255, 0)");
 
-      // 구름의 기본 형태
       ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
-      // 위쪽 돌기들
-      ctx.arc(x - r * 0.5, y - r * 0.2, r * 0.7, 0, Math.PI * 2);
-      ctx.arc(x + r * 0.5, y - r * 0.3, r * 0.6, 0, Math.PI * 2);
-      ctx.arc(x - r * 0.8, y - r * 0.1, r * 0.5, 0, Math.PI * 2);
-      // 아래쪽 돌기들
-      ctx.arc(x + r * 0.8, y + r * 0.1, r * 0.6, 0, Math.PI * 2);
-      ctx.arc(x + r * 0.2, y + r * 0.2, r * 0.7, 0, Math.PI * 2);
-
-      // 그림자 효과
-      ctx.shadowColor = "rgba(0, 0, 0, 0.1)";
-      ctx.shadowBlur = r * 0.5;
-      ctx.shadowOffsetX = r * 0.1;
-      ctx.shadowOffsetY = r * 0.1;
-
-      ctx.fillStyle = gradient;
+      ctx.fillStyle = outerGlow;
+      ctx.arc(x, y, this.radius * 1.5, 0, Math.PI * 2);
       ctx.fill();
+
+      // 각 부분 구름 그리기
+      this.subClouds.forEach((cloud) => {
+        const cloudX = x + cloud.x;
+        const cloudY = y + cloud.y;
+
+        // 각 부분의 그라데이션
+        const gradient = ctx.createRadialGradient(
+          cloudX,
+          cloudY,
+          0,
+          cloudX,
+          cloudY,
+          cloud.r
+        );
+        gradient.addColorStop(0, `rgba(255, 255, 255, ${this.opacity * 1.2})`);
+        gradient.addColorStop(0.5, `rgba(255, 255, 255, ${this.opacity})`);
+        gradient.addColorStop(1, `rgba(255, 255, 255, ${this.opacity * 0.8})`);
+
+        // 부드러운 그림자 효과
+        ctx.shadowColor = "rgba(0, 0, 0, 0.05)";
+        ctx.shadowBlur = cloud.r * 0.3;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = cloud.r * 0.1;
+
+        ctx.beginPath();
+        ctx.fillStyle = gradient;
+        ctx.arc(cloudX, cloudY, cloud.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
 
       // 그림자 초기화
       ctx.shadowColor = "transparent";
       ctx.shadowBlur = 0;
       ctx.shadowOffsetX = 0;
       ctx.shadowOffsetY = 0;
+
       return;
     }
 
@@ -351,7 +371,16 @@ class Particle {
     }
 
     if (this.type === "star") {
-      // 별 주변의 빛나는 효과
+      const [r, g, b] = this.color;
+
+      // 중심 별 먼저 그리기
+      ctx.globalCompositeOperation = "screen";
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${this.opacity * 1.2})`;
+      ctx.fill();
+
+      // 부드러운 빛나는 효과
       const gradient = ctx.createRadialGradient(
         this.x,
         this.y,
@@ -360,42 +389,16 @@ class Particle {
         this.y,
         this.radius * this.glowSize
       );
-      const [r, g, b] = this.color;
-      gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${this.opacity})`);
+      gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${this.opacity * 0.5})`);
       gradient.addColorStop(
-        0.4,
-        `rgba(${r}, ${g}, ${b}, ${this.opacity * 0.3})`
+        0.5,
+        `rgba(${r}, ${g}, ${b}, ${this.opacity * 0.1})`
       );
-      gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+      gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
 
-      // 빛나는 효과 그리기
-      ctx.globalCompositeOperation = "screen";
-      ctx.fillStyle = gradient;
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.radius * this.glowSize, 0, Math.PI * 2);
-      ctx.fill();
-
-      // 중심 별 그리기
-      const centerGradient = ctx.createRadialGradient(
-        this.x,
-        this.y,
-        0,
-        this.x,
-        this.y,
-        this.radius
-      );
-      centerGradient.addColorStop(
-        0,
-        `rgba(${r}, ${g}, ${b}, ${this.opacity * 1.5})`
-      );
-      centerGradient.addColorStop(
-        1,
-        `rgba(${r}, ${g}, ${b}, ${this.opacity * 0.5})`
-      );
-
-      ctx.fillStyle = centerGradient;
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fillStyle = gradient;
       ctx.fill();
 
       ctx.globalCompositeOperation = "source-over";
@@ -465,7 +468,6 @@ export default function HomePic() {
 
       let weatherType;
       let bgColor;
-      weatherCode = 800;
 
       // 날씨 코드에 따른 상세 분류
       if (weatherCode >= 200 && weatherCode < 300) {
