@@ -7,15 +7,13 @@ export default function MemoryTitle() {
           className={`toc-class translate-y-6 opacity-0 ${appleFontEB.className} 
     text-black text-4xl`}
         >
-          추억
+          넋두리
         </div>
         <div
           id="toc-header"
           className={`toc-class translate-y-6 opacity-0 ${appleFontB.className} text-gray-500 mt-5`}
         >
-          <div>Can I walk with you or have a tea with you?</div>
-          <div>Your scent makes me feel like I live in Paris</div>
-          <div>Can I love you? Giving my all to you?🎵</div>
+          <div>Livin young till I die</div>
         </div>
       </div>
     </div>
