@@ -89,7 +89,7 @@ export default function TravelButton() {
           <div
             className={
               currentMode
-                ? "flex items-center gap-2"
+                ? "grid grid-rows-2 items-center grid-flow-col gap-2"
                 : "items-center justify-center"
             }
           >
