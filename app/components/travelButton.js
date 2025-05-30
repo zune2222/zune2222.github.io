@@ -39,7 +39,7 @@ export default function TravelButton() {
           ref: springApi,
           config: { tension: 250, mass: 2 },
           width: "20rem",
-          height: "4.3rem",
+          height: "8rem",
         }
   );
 
