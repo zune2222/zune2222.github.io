@@ -75,8 +75,14 @@ export function getInitialState() {
   const hours = new Date().getHours();
   const isDaytime = hours >= 6 && hours < 18;
   
+  // 초기 로딩 시 부드러운 색상 사용
+  // 실제 날씨 데이터를 받으면 적절한 색상으로 전환됨
+  const defaultBgColor = isDaytime 
+    ? "bg-gradient-to-b from-sky-300 to-cyan-200"  // 기본 낮 색상
+    : "bg-gradient-to-b from-slate-700 to-slate-800"; // 부드러운 밤 색상
+  
   return {
-    bgColor: getBackgroundByTime(hours, isDaytime),
+    bgColor: defaultBgColor,
     isDaytime: isDaytime,
     weatherType: isDaytime ? "sun" : "star",
   };
