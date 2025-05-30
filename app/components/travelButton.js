@@ -13,7 +13,6 @@ import logoTranparency from "../../src/img/logoTranparency.png";
 import daisyBooks from "../../src/img/daisyBooks.png";
 import memory from "../../src/img/memoryParis.png";
 import parisTranparency from "../../src/img/memoryParisTranparency.png";
-import coin from "../../src/img/coin.png";
 import { usePathname } from "next/navigation";
 
 export default function TravelButton() {
@@ -39,8 +38,8 @@ export default function TravelButton() {
       : {
           ref: springApi,
           config: { tension: 250, mass: 2 },
-          width: "20rem",
-          height: "8rem",
+          width: "15rem",
+          height: "4.3rem",
         }
   );
 
@@ -57,12 +56,6 @@ export default function TravelButton() {
       src: memory,
       class: "w-12 h-12 rounded-full bg-red-50",
       key: 3,
-    },
-    {
-      link: "https://python-bitcoin-auto-trading.web.app/",
-      src: coin,
-      class: "w-12 h-12 rounded-full bg-red-50",
-      key: 4,
     },
   ];
 
@@ -85,10 +78,6 @@ export default function TravelButton() {
     setCurrentMode(!currentMode);
   };
 
-  const handleExternalLinkClick = (url) => {
-    window.open(url, "_blank");
-  };
-
   return (
     <div className="z-50 fixed w-full top-0">
       <div className="z-100 flex flex-col p-3 justify-start items-center">
@@ -100,32 +89,21 @@ export default function TravelButton() {
           <div
             className={
               currentMode
-                ? "grid grid-rows-2 items-center grid-flow-col gap-2"
+                ? "flex items-center gap-2"
                 : "items-center justify-center"
             }
           >
             {transitions((style, item) => (
               <animated.div style={{ ...style }}>
                 {currentMode ? (
-                  item.link.startsWith("http") ? (
-                    <div onClick={() => handleExternalLinkClick(item.link)}>
-                      <Image
-                        placeholder="blur"
-                        alt="travelButtonImage"
-                        src={item.src}
-                        className={item.class}
-                      />
-                    </div>
-                  ) : (
-                    <Link href={item.link}>
-                      <Image
-                        placeholder="blur"
-                        alt="travelButtonImage"
-                        src={item.src}
-                        className={item.class}
-                      />
-                    </Link>
-                  )
+                  <Link href={item.link}>
+                    <Image
+                      placeholder="blur"
+                      alt="travelButtonImage"
+                      src={item.src}
+                      className={item.class}
+                    />
+                  </Link>
                 ) : (
                   <Image
                     placeholder="blur"
