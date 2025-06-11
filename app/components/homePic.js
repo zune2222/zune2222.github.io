@@ -7,18 +7,18 @@ import CardHover from "./cardHover";
 import { useEffect, useState, useRef } from "react";
 
 // 모듈화된 파일들 import
-import { 
-  getInitialState, 
-  getWeatherType, 
-  getWeatherBackground 
-} from './homePic/weatherConfig';
-import { fetchWeatherData } from './homePic/weatherAPI';
-import { 
-  initParticles, 
-  resizeCanvas, 
-  animate, 
-  handleMouseMove 
-} from './homePic/canvasUtils';
+import {
+  getInitialState,
+  getWeatherType,
+  getWeatherBackground,
+} from "./homePic/weatherConfig";
+import { fetchWeatherData } from "./homePic/weatherAPI";
+import {
+  initParticles,
+  resizeCanvas,
+  animate,
+  handleMouseMove,
+} from "./homePic/canvasUtils";
 
 export default function HomePic() {
   const [timeState, setTimeState] = useState(getInitialState);
@@ -31,12 +31,16 @@ export default function HomePic() {
   // 날씨 데이터 가져오기 및 상태 업데이트
   const updateWeather = async () => {
     const weatherData = await fetchWeatherData();
-    
+
     if (weatherData) {
       const hours = new Date().getHours();
       const isDaytime = hours >= 6 && hours < 18;
       const weatherType = getWeatherType(weatherData.weatherCode, isDaytime);
-      const bgColor = getWeatherBackground(weatherData.weatherCode, isDaytime, hours);
+      const bgColor = getWeatherBackground(
+        weatherData.weatherCode,
+        isDaytime,
+        hours
+      );
 
       console.log(
         "Current weather:",
@@ -55,9 +59,7 @@ export default function HomePic() {
 
       // 밤하늘에 별을 추가
       if (!isDaytime && weatherData.weatherCode === 800) {
-        particlesRef.current = [
-          ...initParticles("star", canvasRef.current),
-        ];
+        particlesRef.current = [...initParticles("star", canvasRef.current)];
       } else {
         particlesRef.current = initParticles(weatherType, canvasRef.current);
       }
@@ -112,7 +114,7 @@ export default function HomePic() {
           />
         </div>
       </div>
-      <div className="mt-10 flex w-full h-auto z-2 flex flex-col items-center justify-center">
+      <div className="mt-10 flex w-full h-auto z-20 flex flex-col items-center justify-center">
         <CardHover className="cursor-pointer">
           <Link
             href={`https://zune2222.notion.site/Pak-Jun-Yi-2c6ae27311c94be48543fc00c0ea861a?pvs=4`}
@@ -122,7 +124,7 @@ export default function HomePic() {
             <Image
               placeholder="blur"
               alt="logo"
-              className="toc-class opacity-0 translate-y-6 w-56 h-56 rounded-3xl shadow-2xl"
+              className="w-56 h-56 rounded-3xl shadow-2xl"
               src={Logo}
             />
           </Link>
