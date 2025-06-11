@@ -25,6 +25,62 @@
 
 블로그에 접속하기! [블로그 바로가기](https://zune2222.github.io)를 방문하세요.
 
+---
+
+## 📋 Release Notes
+
+### Version 1.1.0 (2025-06-11)
+
+![Main Page](https://github.com/zune2222/zune2222.github.io/assets/57588269/main-page-v1.1.0.png)
+*실시간 날씨 기반 동적 배경 시스템*
+
+![Blog List](https://github.com/zune2222/zune2222.github.io/assets/57588269/blog-list-v1.1.0.png)
+*13개의 기술 블로그 글이 포함된 블로그 목록*
+
+#### ✨ 새로운 기능 
+- **실시간 날씨 기반 배경 시스템**: 부산 지역 날씨에 따라 메인 페이지 배경과 파티클 애니메이션이 자동으로 변경됩니다
+  - 맑은 날: 파란 하늘과 태양 
+  - 비/눈: 실제 날씨에 맞는 파티클 애니메이션
+  - 밤: 별이 빛나는 밤하늘
+- **AI 기반 블로그 작성 워크플로우**: MCP 도구를 활용한 완전 자동화된 블로그 글 작성 및 배포 시스템
+- **Google Analytics 통합**: GA4를 통한 방문자 통계 추적
+- **Google Search Console 연동**: 검색 엔진 최적화를 위한 사이트 인증
+
+#### 🛠️ 개선사항
+- **빌드 시스템 안정화**: GitHub Actions 워크플로우 최적화로 배포 안정성 향상
+- **반응형 디자인 개선**: 다양한 화면 크기에서의 사용자 경험 향상
+- **페이지 로딩 속도 최적화**: Next.js 이미지 최적화 및 우선순위 로딩 적용
+
+#### 📝 새로운 콘텐츠
+- **Log #12**: "한 줄의 polyfill이 살린 React Native STOMP 연결" - React Native 개발 경험담
+- **Log #13**: "Claude Code와 Cursor를 동시에 사용해서 개발 속도 2배 향상" - AI 도구 활용법
+
+#### 🐛 버그 수정
+- 메인 페이지 로고 이미지 가시성 문제 해결 (z-index 레이어링 이슈)
+- GitHub Actions 빌드 실패 문제 해결 (워크플로우 명령어 수정)
+- SEO 관련 빌드 오류 수정
+
+#### 🎨 UI/UX 개선
+- Travel Button 네비게이션 최적화 (Bitcoin 링크 제거, 3개 항목으로 조정)
+- 블로그 카드 디자인 통일성 향상
+- 캔버스 애니메이션과 콘텐츠 레이어링 최적화
+
+#### 🔧 기술적 개선
+- **MCP 도구 생태계 구축**: 
+  - File System Tools: 로컬 파일 관리 자동화
+  - GitHub Integration Tools: 원클릭 배포 시스템
+  - Browser Automation Tools: 실시간 배포 상태 모니터링
+- **Knowledge Graph 시스템**: 블로그 개발 과정 및 워크플로우 문서화
+- **ContentLayer 설정 최적화**: MDX 파일 처리 성능 향상
+
+#### 📊 현재 상태
+- **총 블로그 글**: 13개 (기술 블로그 위주)
+- **빌드 상태**: ✅ 안정적 배포 (GitHub Actions)
+- **접근성**: ✅ Google Search Console 인증 완료
+- **모니터링**: ✅ Google Analytics 4 연동
+
+---
+
 ### 작성자
 
 - 박준이
