@@ -6,24 +6,24 @@ description: TextEncoder/TextDecoder polyfill로 해결한 React Native STOMP �
 
 ## 문제의 시작: CONNECT 프레임이 아예 나가지 않는다
 
-React Native에서 실시간 채팅을 구현하기 위해 STOMP 프로토콜을 사용하던 중, 황당한 문제에 부딪혔다. 
-**CONNECT 프레임이 아예 서버로 전송되지 않는 것**이었다. 
+React Native에서 실시간 채팅을 구현하기 위해 STOMP 프로토콜을 사용하던 중, 황당한 문제에 부딪혔다.
+**CONNECT 프레임이 아예 서버로 전송되지 않는 것**이었다.
 
-네트워크 디버깅을 아무리 해봐도 WebSocket 연결은 정상적으로 이루어지는데, 
+네트워크 디버깅을 아무리 해봐도 WebSocket 연결은 정상적으로 이루어지는데,
 STOMP 레벨에서의 핸드셰이크가 시작조차 되지 않았다.
 
 ```javascript
 // 이렇게 간단한 코드가 작동하지 않았다
-import { Client } from '@stomp/stompjs';
+import { Client } from "@stomp/stompjs";
 
 const client = new Client({
-  brokerURL: 'ws://localhost:8080/ws',
+  brokerURL: "ws://localhost:8080/ws",
   onConnect: () => {
-    console.log('Connected!'); // 이 로그가 절대 찍히지 않음
+    console.log("Connected!"); // 이 로그가 절대 찍히지 않음
   },
   onStompError: (frame) => {
-    console.error('STOMP error:', frame);
-  }
+    console.error("STOMP error:", frame);
+  },
 });
 
 client.activate();
@@ -39,7 +39,7 @@ client.activate();
 // @stomp/stompjs 내부 코드 (단순화)
 class StompFrame {
   serialize() {
-    const frameString = this.headers + '\n\n' + this.body + '\0';
+    const frameString = this.headers + "\n\n" + this.body + "\0";
     // 이 부분에서 TextEncoder를 사용!
     const bytes = new TextEncoder().encode(frameString);
     return bytes;
@@ -51,12 +51,12 @@ class StompFrame {
 
 이게 왜 문제인지 정리하면:
 
-| 단계 | STOMP 내부 동작 | 없는 경우 발생하는 현상 |
-|------|----------------|---------------------|
+| 단계                  | STOMP 내부 동작                         | 없는 경우 발생하는 현상                      |
+| --------------------- | --------------------------------------- | -------------------------------------------- |
 | ① CONNECT 프레임 생성 | `new TextEncoder().encode(frameString)` | `ReferenceError: TextEncoder is not defined` |
-| ② 서버 응답 처리 | `new TextDecoder().decode(arrayBuffer)` | 프레임 파싱 불가 |
+| ② 서버 응답 처리      | `new TextDecoder().decode(arrayBuffer)` | 프레임 파싱 불가                             |
 
-결국 **프레임을 바이트 배열로 직렬화하는 가장 첫 단계**에서 예외가 터져버리니, 
+결국 **프레임을 바이트 배열로 직렬화하는 가장 첫 단계**에서 예외가 터져버리니,
 CONNECT 프레임이 네트워크로 나갈 수가 없었던 것이다.
 
 ## 해결책: 딱 한 줄의 polyfill
@@ -69,10 +69,10 @@ npm install text-encoding-polyfill
 
 ```javascript
 // App.js 최상단에 단 한 줄만 추가
-import 'text-encoding-polyfill';
+import "text-encoding-polyfill";
 
 // 이제 STOMP가 정상 작동한다
-import { Client } from '@stomp/stompjs';
+import { Client } from "@stomp/stompjs";
 ```
 
 이 polyfill이 하는 일을 간단히 설명하면:
@@ -108,6 +108,7 @@ if (!globalThis.TextDecoder) {
 ## polyfill이 고친 전체 흐름
 
 ### Before (polyfill 없음)
+
 ```javascript
 // 1. CONNECT 프레임 생성 시도
 const frameString = "CONNECT\nhost:localhost\n\n\0";
@@ -116,6 +117,7 @@ const bytes = new TextEncoder().encode(frameString); // ❌ ReferenceError!
 ```
 
 ### After (polyfill 적용)
+
 ```javascript
 // 1. CONNECT 프레임 생성 성공
 const frameString = "CONNECT\nhost:localhost\n\n\0";
@@ -132,13 +134,13 @@ websocket.onmessage = (event) => {
 
 ## 추가 이슈: React Native WebSocket의 NULL 버그
 
-polyfill을 적용했는데도 여전히 문제가 있는 경우가 있었다. 
+polyfill을 적용했는데도 여전히 문제가 있는 경우가 있었다.
 React Native의 WebSocket 구현에서 **문자열 프레임의 끝에 있는 NULL 문자(`\0`)가 잘리는 버그** 때문이었다.
 
 ```javascript
 // 해결책: 바이너리 프레임 강제 사용
 const client = new Client({
-  brokerURL: 'ws://localhost:8080/ws',
+  brokerURL: "ws://localhost:8080/ws",
   // 이 두 옵션으로 바이너리 모드 강제
   forceBinaryWSFrames: true,
   appendMissingNULLonIncoming: true,
@@ -148,11 +150,13 @@ const client = new Client({
 ## 왜 이런 일이 생겼을까?
 
 ### React Native의 JavaScript 엔진 한계
+
 - React Native는 브라우저가 아닌 **모바일 전용 JavaScript 엔진**을 사용
 - Hermes나 JSC 모두 표준 Web API 중 일부만 구현
 - `TextEncoder`/`TextDecoder`는 비교적 최근에 추가된 API라 지원이 늦음
 
 ### STOMP.js 라이브러리의 가정
+
 - `@stomp/stompjs` 7.x 이상은 **브라우저 환경을 전제**로 설계
 - 표준 Encoding API가 있다고 가정하고 코어 로직을 구현
 - polyfill 없이는 React Native에서 작동할 수 없는 구조
@@ -160,35 +164,39 @@ const client = new Client({
 ## 교훈과 배운 점
 
 ### 1. 환경별 API 지원 차이 인식의 중요성
-브라우저에서 잘 되던 라이브러리가 React Native에서 안 되는 이유는 
+
+브라우저에서 잘 되던 라이브러리가 React Native에서 안 되는 이유는
 **플랫폼별 JavaScript 엔진의 API 지원 차이** 때문인 경우가 많다.
 
 ### 2. polyfill의 중요성
-polyfill은 단순히 "구버전 브라우저 지원"용이 아니라, 
+
+polyfill은 단순히 "구버전 브라우저 지원"용이 아니라,
 **다양한 JavaScript 환경 간의 호환성을 보장**하는 핵심 도구다.
 
 ### 3. 문제 해결 과정에서의 깊이 있는 이해
-표면적인 증상(CONNECT가 안 됨)에서 시작해서 
+
+표면적인 증상(CONNECT가 안 됨)에서 시작해서
 근본 원인(TextEncoder 부재)까지 파고들면서 웹 표준과 플랫폼별 구현의 차이를 깊이 이해하게 되었다.
 
 ## 정리: 한 줄이 만든 차이
 
 ```javascript
 // 이 한 줄이 만든 차이
-import 'text-encoding-polyfill';
+import "text-encoding-polyfill";
 ```
 
 - **Before**: STOMP 연결 시도 → `TextEncoder is not defined` → 크래시
 - **After**: STOMP 연결 시도 → polyfill이 인코딩 처리 → 정상 연결
 
 겉보기에는 단순한 import 문 하나지만, 실제로는:
+
 - **STOMP 프레임을 문자열에서 바이트로 변환**
 - **서버 응답을 바이트에서 문자열로 역변환**
 - **React Native와 웹 브라우저 간의 API 격차 해소**
 
 모든 것을 가능하게 만든 **필수 인프라**였다.
 
-React Native에서 웹 기반 라이브러리를 사용할 때는 항상 이런 플랫폼별 차이를 염두에 두고, 
+React Native에서 웹 기반 라이브러리를 사용할 때는 항상 이런 플랫폼별 차이를 염두에 두고,
 필요한 polyfill을 미리 확인하는 습관을 들여야겠다.
 
 > **핵심 포인트**: STOMP ≒ 문자열 프로토콜 → 모바일 JS 엔진에 TextEncoder/Decoder가 반드시 필요

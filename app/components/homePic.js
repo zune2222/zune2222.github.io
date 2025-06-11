@@ -22,6 +22,7 @@ import {
 
 export default function HomePic() {
   const [timeState, setTimeState] = useState(getInitialState);
+  const [isLoading, setIsLoading] = useState(true);
 
   const canvasRef = useRef(null);
   const mouseRef = useRef({ x: 0, y: 0 });
@@ -63,6 +64,9 @@ export default function HomePic() {
       } else {
         particlesRef.current = initParticles(weatherType, canvasRef.current);
       }
+      
+      // 로딩 완료
+      setIsLoading(false);
     }
   };
 

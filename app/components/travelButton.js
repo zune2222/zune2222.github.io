@@ -13,7 +13,6 @@ import logoTranparency from "../../src/img/logoTranparency.png";
 import daisyBooks from "../../src/img/daisyBooks.png";
 import memory from "../../src/img/memoryParis.png";
 import parisTranparency from "../../src/img/memoryParisTranparency.png";
-
 import { usePathname } from "next/navigation";
 
 export default function TravelButton() {
@@ -78,8 +77,6 @@ export default function TravelButton() {
   const handleClick = () => {
     setCurrentMode(!currentMode);
   };
-
-
 
   return (
     <div className="z-50 fixed w-full top-0">
