@@ -106,7 +106,7 @@ export default function HomePic() {
           ref={canvasRef}
           className="absolute top-0 left-0 w-full h-full z-10"
         />
-        <div className="flex z-0">
+        <div className="flex z-20 relative">
           <Image
             placeholder="blur"
             alt="main logo"
