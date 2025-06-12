@@ -1,0 +1,271 @@
+---
+title: React Native TTS, 사용자 폰에 언어 데이터가 없으면 소리가 안 난다
+date: 2025-06-12
+description: TTS 라이브러리 적용 중 발견한 중요한 사실 - 디바이스별 언어 지원 상태를 체크해야 하는 이유
+---
+
+## 문제 발견: "왜 TTS가 안 되지?"
+
+React Native 앱에 TTS(Text-to-Speech) 기능을 넣고 있었다. 개발 중에는 잘 되던 게, 다른 사람 폰에서 테스트하니까 **아무 소리가 안 나는** 상황이 발생했다.
+
+에러도 없고, 로그도 정상이고, 그냥... 조용했다.
+
+## 원인: 언어 데이터가 없는 디바이스
+
+결론부터 말하면, **사용자의 스마트폰에 해당 언어의 TTS 데이터가 설치되어 있지 않으면 재생이 안 된다**.
+
+내 개발 폰에는 한국어, 영어 TTS 데이터가 모두 설치되어 있었지만, 테스터의 폰에는 **영어 TTS 데이터만** 있었던 것이다.
+
+```javascript
+// 이 코드가 조용히 실패하는 이유
+await Tts.speak("안녕하세요", {
+  language: 'ko-KR'  // 한국어 TTS 데이터가 없으면 무음
+});
+```
+
+## TTS 라이브러리 동작 방식 이해
+
+### react-native-tts 기본 동작
+
+```javascript
+import Tts from 'react-native-tts';
+
+// 1. 사용 가능한 언어 목록 확인
+const voices = await Tts.voices();
+console.log(voices);
+
+// 2. 특정 언어로 음성 재생 시도
+await Tts.speak("Hello World", {
+  language: 'en-US'
+});
+```
+
+### 언어별 데이터 확인 방법
+
+```javascript
+// iOS에서 사용 가능한 voice 확인
+const checkAvailableVoices = async () => {
+  try {
+    const voices = await Tts.voices();
+    
+    // 한국어 voice가 있는지 확인
+    const koreanVoices = voices.filter(voice => 
+      voice.language.startsWith('ko')
+    );
+    
+    console.log('Korean voices:', koreanVoices);
+    
+    if (koreanVoices.length === 0) {
+      console.log('⚠️ 한국어 TTS 데이터가 설치되어 있지 않음');
+    }
+    
+  } catch (error) {
+    console.error('Voice 체크 실패:', error);
+  }
+};
+```
+
+## 실제 디바이스별 테스트 결과
+
+| 디바이스 | 기본 설치된 언어 | 한국어 TTS | 영어 TTS |
+|---------|----------------|-----------|----------|
+| iPhone (한국) | 한국어, 영어 | ✅ | ✅ |
+| iPhone (미국) | 영어 | ❌ | ✅ |
+| Android (한국) | 한국어, 영어 | ✅ | ✅ |
+| Android (해외) | 영어만 | ❌ | ✅ |
+
+**핵심**: 디바이스의 지역 설정과 사용자가 추가로 다운로드한 언어 팩에 따라 지원되는 TTS 언어가 다르다.
+
+## 해결 방법: 방어적 프로그래밍
+
+### 1. 언어 지원 여부 사전 체크
+
+```javascript
+const safeTtsSpeak = async (text, preferredLanguage = 'ko-KR') => {
+  try {
+    // 1. 사용 가능한 voice 목록 가져오기
+    const voices = await Tts.voices();
+    
+    // 2. 선호 언어 지원 여부 확인
+    const supportedVoice = voices.find(voice => 
+      voice.language === preferredLanguage
+    );
+    
+    if (supportedVoice) {
+      // 3-1. 지원되는 언어로 재생
+      await Tts.speak(text, {
+        language: preferredLanguage
+      });
+      console.log(`✅ ${preferredLanguage}로 TTS 재생`);
+    } else {
+      // 3-2. 대체 언어로 재생 (보통 영어)
+      console.log(`⚠️ ${preferredLanguage} 미지원, 영어로 대체`);
+      await Tts.speak(translateToEnglish(text), {
+        language: 'en-US'
+      });
+    }
+    
+  } catch (error) {
+    console.error('TTS 재생 실패:', error);
+  }
+};
+```
+
+### 2. 언어별 폴백 체인 구성
+
+```javascript
+const languageFallbackChain = ['ko-KR', 'en-US', 'en-GB'];
+
+const speakWithFallback = async (text) => {
+  const voices = await Tts.voices();
+  const availableLanguages = voices.map(voice => voice.language);
+  
+  // 지원되는 첫 번째 언어 찾기
+  const targetLanguage = languageFallbackChain.find(lang =>
+    availableLanguages.includes(lang)
+  );
+  
+  if (targetLanguage) {
+    const finalText = targetLanguage.startsWith('ko') ? text : 
+                     await translateText(text, targetLanguage);
+    
+    await Tts.speak(finalText, {
+      language: targetLanguage
+    });
+  } else {
+    console.error('사용 가능한 TTS 언어가 없음');
+  }
+};
+```
+
+### 3. 사용자에게 언어 설정 안내
+
+```javascript
+const checkAndGuideUser = async () => {
+  const voices = await Tts.voices();
+  const hasKorean = voices.some(voice => 
+    voice.language.startsWith('ko')
+  );
+  
+  if (!hasKorean) {
+    // 사용자에게 언어 설정 안내
+    Alert.alert(
+      'TTS 언어 설정',
+      '한국어 음성을 사용하려면 설정에서 한국어 TTS를 다운로드해주세요.',
+      [
+        { text: '나중에', style: 'cancel' },
+        { 
+          text: '설정으로 가기', 
+          onPress: () => {
+            // iOS: 설정 > 접근성 > 음성 콘텐츠 > 음성
+            // Android: 설정 > 언어 및 입력 > 텍스트 음성 변환
+            Linking.openSettings();
+          }
+        }
+      ]
+    );
+  }
+};
+```
+
+## 플랫폼별 차이점
+
+### iOS
+- **설정 경로**: 설정 > 접근성 > 음성 콘텐츠 > 음성
+- **특징**: 고품질 음성은 별도 다운로드 필요
+- **용량**: 언어별 100-200MB
+
+### Android  
+- **설정 경로**: 설정 > 언어 및 입력 > 텍스트 음성 변환 출력
+- **특징**: Google TTS 엔진 사용
+- **용량**: 언어별 20-50MB
+
+```javascript
+// 플랫폼별 설정 안내
+const getSettingsGuide = () => {
+  const isIOS = Platform.OS === 'ios';
+  
+  return isIOS 
+    ? '설정 > 접근성 > 음성 콘텐츠 > 음성에서 한국어를 다운로드해주세요.'
+    : '설정 > 언어 및 입력 > 텍스트 음성 변환에서 한국어를 설치해주세요.';
+};
+```
+
+## 실전 적용: 사용자 경험 개선
+
+### 앱 초기 실행 시 TTS 환경 체크
+
+```javascript
+const initializeTTS = async () => {
+  try {
+    // TTS 초기화
+    await Tts.setDefaultLanguage('ko-KR');
+    await Tts.setDefaultRate(0.5);
+    
+    // 언어 지원 여부 체크
+    const voices = await Tts.voices();
+    const supportedLanguages = voices.map(v => v.language);
+    
+    // 앱 상태에 저장
+    setTtsLanguages(supportedLanguages);
+    
+    // 한국어 미지원 시 사용자에게 안내
+    if (!supportedLanguages.some(lang => lang.startsWith('ko'))) {
+      showLanguageGuide();
+    }
+    
+  } catch (error) {
+    console.error('TTS 초기화 실패:', error);
+  }
+};
+```
+
+### TTS 기능 사용 전 항상 체크
+
+```javascript
+const useTTS = () => {
+  const [availableLanguages, setAvailableLanguages] = useState([]);
+  
+  const speak = useCallback(async (text, language = 'ko-KR') => {
+    // 매번 언어 지원 여부 확인
+    if (!availableLanguages.includes(language)) {
+      console.log(`${language} 미지원, 영어로 대체`);
+      language = 'en-US';
+      text = await translateToEnglish(text);
+    }
+    
+    await Tts.speak(text, { language });
+  }, [availableLanguages]);
+  
+  return { speak, availableLanguages };
+};
+```
+
+## 결론: TTS는 항상 방어적으로 구현해야 한다
+
+**핵심 교훈들**:
+
+1. **사전 체크 필수**: 앱 실행 시 지원 언어 확인
+2. **폴백 전략**: 우선순위가 있는 언어 체인 구성  
+3. **사용자 안내**: 언어 미지원 시 설정 방법 안내
+4. **에러 핸들링**: 조용한 실패를 방지하는 로그 구성
+
+```javascript
+// 최종 권장 패턴
+const robustTTS = {
+  // 초기화 시 환경 체크
+  init: async () => await checkTTSEnvironment(),
+  
+  // 안전한 음성 재생
+  speak: async (text, lang) => await safeTtsSpeak(text, lang),
+  
+  // 사용자 가이드
+  guide: () => showLanguageSetupGuide()
+};
+```
+
+TTS 기능을 구현할 때는 **"내 폰에서 되니까 다른 폰에서도 될 거야"**라고 가정하면 안 된다. 
+
+사용자의 디바이스 환경은 천차만별이고, 특히 **언어 데이터는 선택적으로 설치**되는 경우가 많다는 점을 항상 염두에 두어야 한다.
+
+> **핵심**: React Native TTS는 단순히 `Tts.speak()`만 호출하는 게 아니라, **디바이스의 언어 지원 상태를 체크하고 대응하는 방어적 프로그래밍**이 필수다.
