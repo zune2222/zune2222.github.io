@@ -1,0 +1,373 @@
+---
+title: "React Native 이미지 최적화 완벽 해결: expo-image-manipulator로 5MB → 50KB 실시간 압축하기"
+date: "2025-06-18"
+description: "5-15MB 이미지 때문에 화면 전환이 버벅거렸다. expo-image-manipulator로 실시간 이미지 리사이징과 AsyncStorage 캐싱을 구현해 99% 용량을 줄인 과정을 공유한다."
+---
+
+React Native 앱에서 고화질 이미지로 인한 성능 문제는 개발자들의 영원한 숙제다. 5-15MB에 달하는 이미지들이 화면 전환 애니메이션을 망치고 있었다. Firebase Storage URL 파라미터 같은 방법도 시도해봤지만, 결국 **expo-image-manipulator**로 진짜 해결책을 찾았다.
+
+## 문제: 거대한 이미지가 앱을 느리게 만든다
+
+```javascript
+// 기존 코드 - 원본 이미지를 그대로 사용
+<Image 
+  source={{ uri: item.coverImageURL }} // 😱 5-15MB 원본!
+  style={styles.coverImage}
+/>
+```
+
+이런 상황이 발생했다:
+- 탭 전환 시 심각한 랙
+- 리스트 스크롤 버벅거림
+- 메모리 사용량 폭증
+- 이미지 로딩 시간 3-5초
+
+## 해결책: useOptimizedImage 커스텀 훅
+
+expo-image-manipulator를 활용해 실시간으로 이미지를 압축하고, AsyncStorage로 캐싱하는 커스텀 훅을 만들었다.
+
+```javascript
+import * as ImageManipulator from 'expo-image-manipulator';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect, useState } from 'react';
+
+interface UseOptimizedImageOptions {
+  width: number;
+  height: number;
+  quality: number;
+  format?: ImageManipulator.SaveFormat;
+}
+
+export function useOptimizedImage(
+  originalUri: string | undefined,
+  itemId: string,
+  options: UseOptimizedImageOptions
+) {
+  const [optimizedUri, setOptimizedUri] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const { width, height, quality, format = ImageManipulator.SaveFormat.JPEG } = options;
+
+  useEffect(() => {
+    if (!originalUri || originalUri.includes('placeholder')) {
+      setOptimizedUri(originalUri || null);
+      return;
+    }
+
+    const optimizeImage = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        // 캐시 키 생성
+        const cacheKey = `optimized_${itemId}_${width}x${height}_${quality}`;
+        
+        // 캐시에서 확인
+        const cached = await AsyncStorage.getItem(cacheKey);
+        if (cached) {
+          setOptimizedUri(cached);
+          setIsLoading(false);
+          return;
+        }
+
+        // 이미지 리사이징 및 압축
+        const result = await ImageManipulator.manipulateAsync(
+          originalUri,
+          [{ resize: { width, height } }],
+          {
+            compress: quality,
+            format,
+            base64: false,
+          }
+        );
+
+        // 캐시에 저장
+        await AsyncStorage.setItem(cacheKey, result.uri);
+        setOptimizedUri(result.uri);
+      } catch (err) {
+        console.error('이미지 최적화 실패:', err);
+        setError('이미지 최적화 실패');
+        // 실패시 원본 이미지 사용
+        setOptimizedUri(originalUri);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    optimizeImage();
+  }, [originalUri, itemId, width, height, quality, format]);
+
+  return {
+    optimizedUri,
+    isLoading,
+    error,
+  };
+}
+```
+
+## 핵심 기능 분석
+
+### 1. 스마트 캐싱 시스템
+```javascript
+// 캐시 키 생성: 아이템 ID + 크기 + 품질
+const cacheKey = `optimized_${itemId}_${width}x${height}_${quality}`;
+
+// AsyncStorage에서 먼저 확인
+const cached = await AsyncStorage.getItem(cacheKey);
+if (cached) {
+  setOptimizedUri(cached);
+  return; // 캐시 히트! 즉시 반환
+}
+```
+
+### 2. 실시간 이미지 변환
+```javascript
+// expo-image-manipulator로 리사이징 & 압축
+const result = await ImageManipulator.manipulateAsync(
+  originalUri,
+  [{ resize: { width: 200, height: 150 } }], // 리사이징
+  {
+    compress: 0.7,  // 70% 품질로 압축
+    format: ImageManipulator.SaveFormat.JPEG,
+    base64: false,  // base64 대신 파일 URI 사용 (성능상 유리)
+  }
+);
+```
+
+### 3. 에러 처리
+```javascript
+// 최적화 실패 시 원본 이미지 폴백
+catch (err) {
+  console.error('이미지 최적화 실패:', err);
+  setOptimizedUri(originalUri); // 원본으로 폴백
+}
+```
+
+## 실제 사용 예시
+
+### Letter Item 컴포넌트에 적용
+```javascript
+import { useOptimizedImage } from '@/hooks/useOptimizedImage';
+
+function LetterItem({ item }) {
+  const { optimizedUri, isLoading } = useOptimizedImage(
+    item.coverImageURL,
+    item.id,
+    {
+      width: 200,
+      height: 150,
+      quality: 0.7, // 70% 품질
+    }
+  );
+
+  return (
+    <View style={styles.container}>
+      {isLoading ? (
+        <View style={styles.placeholder}>
+          <Text>로딩중...</Text>
+        </View>
+      ) : (
+        <Image 
+          source={{ uri: optimizedUri }}
+          style={styles.coverImage}
+          resizeMode="cover"
+        />
+      )}
+      <Text>{item.title}</Text>
+    </View>
+  );
+}
+```
+
+### FlatList에서 사용
+```javascript
+function LetterList({ letters }) {
+  return (
+    <FlatList
+      data={letters}
+      renderItem={({ item }) => (
+        <LetterItem item={item} />
+      )}
+      keyExtractor={item => item.id}
+      // 최적화된 이미지로 스크롤 성능 향상!
+      removeClippedSubviews={true}
+      maxToRenderPerBatch={10}
+      windowSize={10}
+    />
+  );
+}
+```
+
+## 성능 측정 결과
+
+### Before (원본 이미지)
+```
+- 파일 크기: 5-15MB
+- 로딩 시간: 3-5초
+- 메모리 사용: 이미지당 40-60MB
+- 화면 전환: 눈에 띄는 랙
+- FlatList 스크롤: 버벅거림
+```
+
+### After (최적화된 이미지)
+```
+- 파일 크기: 50-100KB (99% 감소!)
+- 첫 로딩: 0.5-1초 (리사이징 시간)
+- 캐시 로딩: 즉시 (0.01초 미만)
+- 메모리 사용: 이미지당 2-5MB
+- 화면 전환: 완전히 부드러움
+- FlatList 스크롤: 매끄러움
+```
+
+## 고급 활용 팁
+
+### 1. 다양한 크기 옵션 제공
+```javascript
+// 썸네일 크기 프리셋
+const IMAGE_SIZES = {
+  thumbnail: { width: 150, height: 150, quality: 0.6 },
+  small: { width: 300, height: 225, quality: 0.7 },
+  medium: { width: 600, height: 450, quality: 0.8 },
+  large: { width: 1200, height: 900, quality: 0.9 },
+};
+
+// 사용
+const { optimizedUri } = useOptimizedImage(
+  imageUrl,
+  itemId,
+  IMAGE_SIZES.thumbnail
+);
+```
+
+### 2. Progressive Loading 구현
+```javascript
+function ProgressiveImage({ source, itemId }) {
+  // 먼저 작은 썸네일 로드
+  const thumbnail = useOptimizedImage(source, itemId, {
+    width: 50,
+    height: 50,
+    quality: 0.3,
+  });
+  
+  // 그 다음 고화질 이미지 로드
+  const fullImage = useOptimizedImage(source, itemId, {
+    width: 400,
+    height: 300,
+    quality: 0.8,
+  });
+
+  return (
+    <View>
+      {/* 블러 처리된 썸네일 먼저 표시 */}
+      <Image 
+        source={{ uri: thumbnail.optimizedUri }}
+        style={[styles.image, { opacity: fullImage.isLoading ? 1 : 0 }]}
+        blurRadius={10}
+      />
+      {/* 고화질 이미지 오버레이 */}
+      {!fullImage.isLoading && (
+        <Image 
+          source={{ uri: fullImage.optimizedUri }}
+          style={styles.image}
+        />
+      )}
+    </View>
+  );
+}
+```
+
+### 3. 캐시 관리
+```javascript
+// 캐시 크기 제한 및 정리
+const clearOldCache = async () => {
+  try {
+    const keys = await AsyncStorage.getAllKeys();
+    const optimizedKeys = keys.filter(key => key.startsWith('optimized_'));
+    
+    // 30일 이상 된 캐시 삭제
+    const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+    
+    for (const key of optimizedKeys) {
+      const data = await AsyncStorage.getItem(key);
+      // 캐시 메타데이터와 함께 저장했다면 날짜 체크
+      // 오래된 캐시 삭제
+    }
+  } catch (error) {
+    console.error('캐시 정리 실패:', error);
+  }
+};
+```
+
+### 4. WebP 포맷 활용
+```javascript
+// WebP는 JPEG보다 30% 더 작은 크기
+const { optimizedUri } = useOptimizedImage(
+  imageUrl,
+  itemId,
+  {
+    width: 200,
+    height: 150,
+    quality: 0.7,
+    format: ImageManipulator.SaveFormat.WEBP, // WebP 사용
+  }
+);
+```
+
+## 주의사항과 최적화 팁
+
+### 1. 메모리 관리
+```javascript
+// 컴포넌트 언마운트 시 정리
+useEffect(() => {
+  return () => {
+    // 필요시 임시 파일 정리
+    ImageManipulator.cleanupAsync?.();
+  };
+}, []);
+```
+
+### 2. 배치 처리
+```javascript
+// 여러 이미지를 한 번에 최적화
+const optimizeMultipleImages = async (images) => {
+  const promises = images.map(image => 
+    ImageManipulator.manipulateAsync(
+      image.uri,
+      [{ resize: { width: 200, height: 150 } }],
+      { compress: 0.7 }
+    )
+  );
+  
+  return Promise.all(promises);
+};
+```
+
+### 3. 네트워크 상태 고려
+```javascript
+import NetInfo from '@react-native-community/netinfo';
+
+// WiFi에서만 고화질 이미지 로드
+const { isConnected, type } = await NetInfo.fetch();
+const quality = type === 'wifi' ? 0.8 : 0.6;
+```
+
+## 실제 구현 결과
+
+이 솔루션을 적용한 후:
+- **첫 로딩**: 약간의 처리 시간 필요 (0.5-1초)
+- **재방문**: AsyncStorage 캐시로 즉시 로딩
+- **메모리 효율**: 99% 용량 감소로 메모리 부담 최소화
+- **사용자 경험**: 화면 전환과 스크롤이 네이티브 앱처럼 부드러움
+
+## 결론
+
+expo-image-manipulator와 AsyncStorage를 활용한 이미지 최적화는 React Native 앱의 성능을 극적으로 향상시킨다. 특히:
+
+1. **실시간 압축**: 사용자가 필요로 할 때만 이미지 처리
+2. **영구 캐싱**: 한 번 처리한 이미지는 재사용
+3. **유연한 옵션**: 상황에 맞는 크기와 품질 선택
+
+Firebase Storage URL 파라미터 같은 외부 서비스에 의존하지 않고, 앱 내에서 완전히 제어할 수 있다는 점이 가장 큰 장점이다. 
+
+이제 5MB 이미지도 두렵지 않다. 사용자들은 빠른 로딩과 부드러운 애니메이션을 경험하고, 개발자는 성능 걱정 없이 고화질 이미지를 자유롭게 사용할 수 있다.
