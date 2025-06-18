@@ -1,0 +1,266 @@
+---
+title: "React Native 랙의 진짜 원인: JS Thread와 UI Thread 완벽 이해하기"
+date: "2025-06-18"
+description: "토스 앱처럼 부드러운 화면 전환을 구현하다가 이미지 때문에 랙이 걸렸다. 문제를 파헤치다 보니 React Native의 Thread 구조를 제대로 이해해야 했다."
+---
+
+React Native로 토스 앱처럼 부드러운 탭 전환 애니메이션을 구현하다가 심각한 랙 문제에 부딪혔다. 디버깅 결과, 이미지가 있는 페이지에서만 랙이 발생한다는 걸 발견했다. 이미지 렌더링과 애니메이션이 동시에 일어나면서 문제가 생긴 것이다.
+
+이 문제를 해결하려면 React Native의 Thread 구조를 정확히 이해해야 한다.
+
+## React Native의 3개 Thread 아키텍처
+
+React Native는 실제로 **3개의 주요 Thread**로 동작한다:
+
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│  JS Thread  │────▶│   Bridge    │────▶│  UI Thread  │
+│             │     │             │     │   (Main)    │
+└─────────────┘     └─────────────┘     └─────────────┘
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │Shadow Thread│
+                    └─────────────┘
+```
+
+### 1. JS Thread (JavaScript Thread)
+
+React 컴포넌트 로직, 상태 관리, 이벤트 처리 등 JavaScript 코드가 실행되는 곳이다.
+
+```javascript
+// JS Thread에서 실행되는 코드들
+const [count, setCount] = useState(0);
+
+const handlePress = () => {
+  setCount(count + 1); // 상태 업데이트
+  fetchData(); // API 호출
+  calculateComplexValue(); // 무거운 연산
+};
+```
+
+### 2. UI Thread (Main/Native Thread)
+
+실제 네이티브 뷰를 렌더링하고 화면에 픽셀을 그리는 역할을 한다. 60fps를 유지해야 하므로 16.67ms 안에 모든 작업을 완료해야 한다.
+
+### 3. Shadow Thread
+
+Yoga 레이아웃 엔진이 Flexbox 계산을 수행하는 곳이다. 뷰의 크기와 위치를 결정한다.
+
+## 이미지 + 애니메이션 = 랙의 정확한 원인
+
+토스 스타일 탭 전환 시 실제로 일어나는 일을 Thread 관점에서 분석하면:
+
+```
+시간 →
+─────────────────────────────────────────────────►
+
+JS Thread:   [탭 클릭] → [상태 변경] → [이미지 로드 시작]
+                ↓                          ↓
+Bridge:      [이벤트 전달]              [이미지 데이터 전달]
+                ↓                          ↓
+UI Thread:   [애니메이션 시작] ← ← ← → [이미지 디코딩/렌더링]
+             (200ms 동안)                (무거운 작업!)
+                    
+결과: 🚨 UI Thread 블로킹 → 애니메이션 프레임 드랍!
+```
+
+### 이미지 처리 파이프라인
+
+```javascript
+1. JS Thread: require('./image.png') 실행
+2. Bridge: 이미지 경로 전달
+3. Native Side: 이미지 파일 읽기
+4. UI Thread: 이미지 디코딩 (PNG/JPEG → Bitmap) 🚨 여기가 문제!
+5. UI Thread: GPU 텍스처 업로드
+6. UI Thread: 화면에 렌더링
+```
+
+특히 큰 이미지의 경우:
+- 2MB 이미지 → 압축 해제 → 10MB+ 비트맵 → UI Thread 블로킹!
+
+## useNativeDriver의 중요성
+
+```javascript
+// ❌ useNativeDriver: false (기본값)
+// JS Thread → Bridge → UI Thread (매 프레임마다!)
+Animated.timing(animValue, {
+  toValue: 100,
+  duration: 1000,
+  useNativeDriver: false, // 매 프레임마다 Bridge 통신!
+}).start();
+
+// ✅ useNativeDriver: true
+// 애니메이션 정보를 한 번만 전송 → UI Thread에서 독립 실행
+Animated.timing(animValue, {
+  toValue: 100,
+  duration: 1000,
+  useNativeDriver: true, // Bridge 통신 1회만!
+}).start();
+```
+
+하지만 `useNativeDriver: true`를 사용해도 이미지 디코딩이 UI Thread를 점유하면 여전히 랙이 발생한다.
+
+## Thread 이해를 바탕으로 한 해결책
+
+### 1. 이미지 디코딩을 UI Thread에서 분리
+
+```javascript
+import FastImage from 'react-native-fast-image';
+
+// FastImage는 별도 Thread에서 디코딩
+<FastImage
+  source={{ uri: imageUrl }}
+  resizeMode={FastImage.resizeMode.contain}
+/>
+```
+
+### 2. 애니메이션과 이미지 로딩 시점 분리
+
+```javascript
+const TabScreen = () => {
+  const opacity = useSharedValue(0);
+  const [loadImage, setLoadImage] = useState(false);
+  
+  // 1단계: 애니메이션만 실행 (UI Thread)
+  useEffect(() => {
+    opacity.value = withTiming(1, { duration: 200 });
+    
+    // 2단계: 애니메이션 후 이미지 로드
+    setTimeout(() => setLoadImage(true), 200);
+  }, []);
+  
+  return (
+    <Animated.View style={[{ opacity }]}>
+      {loadImage && <Image source={heavyImage} />}
+    </Animated.View>
+  );
+};
+```
+
+### 3. 이미지 프리로딩으로 디코딩 시점 제어
+
+```javascript
+// 앱 시작 시 또는 유휴 시간에 미리 디코딩
+const preloadImages = async () => {
+  const images = [
+    require('./tab1.png'),
+    require('./tab2.png'),
+  ];
+  
+  // UI Thread가 한가할 때 미리 처리
+  await InteractionManager.runAfterInteractions(async () => {
+    await Promise.all(images.map(img => Image.prefetch(img)));
+  });
+};
+```
+
+### 4. Reanimated worklet 활용
+
+```javascript
+// UI Thread에서 직접 실행되는 애니메이션
+const animatedStyle = useAnimatedStyle(() => {
+  'worklet'; // 이 함수는 UI Thread에서 실행됨
+  return {
+    transform: [{
+      translateX: withTiming(offset.value, {
+        duration: 200,
+      })
+    }]
+  };
+});
+```
+
+## Bridge 통신 최적화
+
+Bridge는 JS Thread와 Native 간의 모든 통신을 담당한다. 데이터는 JSON으로 직렬화되어 전송되므로 대량의 데이터나 빈번한 통신은 병목이 된다.
+
+```javascript
+// ❌ 나쁜 예: 매 프레임마다 Bridge 통신
+const animateWithJS = () => {
+  requestAnimationFrame(() => {
+    setTranslateX(x + 1); // Bridge 통신 발생!
+    if (x < 100) animateWithJS();
+  });
+};
+
+// ✅ 좋은 예: Native Driver 사용
+const animateWithNative = () => {
+  Animated.timing(translateX, {
+    toValue: 100,
+    useNativeDriver: true, // Bridge 통신 1회만!
+  }).start();
+};
+```
+
+## Performance Monitoring
+
+```javascript
+// Thread 성능 모니터링
+const ThreadMonitor = () => {
+  useEffect(() => {
+    // JS Thread 성능
+    const jsStart = performance.now();
+    // ... JS 작업
+    console.log('JS Thread:', performance.now() - jsStart);
+    
+    // UI Thread 프레임 모니터링
+    let frameCount = 0;
+    const countFrames = () => {
+      frameCount++;
+      requestAnimationFrame(countFrames);
+    };
+    countFrames();
+    
+    setTimeout(() => {
+      console.log('FPS:', frameCount); // 60에 가까울수록 좋음
+    }, 1000);
+  }, []);
+};
+```
+
+## 토스가 부드러운 이유
+
+토스는 아마 이런 전략을 사용할 것이다:
+
+1. **이미지 최적화**
+   - WebP 포맷 사용 (더 빠른 디코딩)
+   - 적절한 해상도 (과도한 고해상도 X)
+   - CDN에서 최적화된 이미지 제공
+
+2. **스마트한 로딩 전략**
+   - 현재 탭 + 양옆 탭만 프리로드
+   - 나머지는 lazy loading
+   - 애니메이션 중엔 placeholder 표시
+
+3. **Native 최적화**
+   - 커스텀 이미지 로더 구현
+   - 별도 Thread에서 디코딩
+   - 메모리 캐시 적극 활용
+
+## Thread 최적화 Best Practices
+
+### JS Thread 최적화
+- 무거운 연산은 `requestIdleCallback` 사용
+- 큰 리스트는 `FlatList`의 `windowSize` 조정
+- 메모이제이션 활용 (`useMemo`, `useCallback`)
+
+### UI Thread 최적화
+- `useNativeDriver: true` 필수
+- `transform`과 `opacity`만 애니메이션
+- `shouldComponentUpdate` 최적화
+
+### Bridge 최적화
+- 배치 업데이트 활용
+- Native Modules 호출 최소화
+- 큰 데이터는 Native에 캐시
+
+## 결론
+
+React Native의 랙 문제는 대부분 Thread 간의 경쟁과 Bridge 병목에서 발생한다. 특히 이미지 디코딩과 애니메이션이 동시에 UI Thread를 점유하려 할 때 문제가 심각해진다.
+
+Thread 구조를 이해하면 "왜 이미지가 있을 때만 랙이 걸리는지" 정확히 알 수 있고, 각 Thread의 작업을 적절히 분배해서 해결할 수 있다. 
+
+핵심은 **JS Thread와 UI Thread 간의 통신을 최소화**하고, **무거운 작업을 적절히 분산**시키는 것이다. 특히 이미지가 있는 화면에서는 프리로딩과 캐싱 전략이 필수적이다.
+
+토스처럼 부드러운 앱을 만들려면 단순히 코드를 잘 짜는 것을 넘어, React Native의 내부 동작 원리를 깊이 이해해야 한다. Thread 구조를 이해하고 나니, 이제 성능 문제를 만날 때마다 어떤 Thread가 문제인지, 어떻게 해결해야 할지 명확히 보인다.
