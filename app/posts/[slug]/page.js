@@ -34,7 +34,7 @@ const PostLayout = ({ params }) => {
         </h1>
       </div>
       <div className="text-black p-5">
-        <MDXContent />
+        <MDXContent components={{ img: (props) => <img {...props} alt={props.alt || ""} src={props.src?.startsWith("/") ? `/legacy${props.src}` : props.src} /> }} />
         <Giscus />
       </div>
     </article>

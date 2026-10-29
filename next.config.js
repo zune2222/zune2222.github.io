@@ -3,8 +3,11 @@ const { withContentlayer } = require("next-contentlayer");
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  basePath: "/legacy",
+  assetPrefix: "/legacy",
+  trailingSlash: true,
+  experimental: { cpus: 2 },
   swcMinify: false,
-  basePath: "",
   output: "export",
   images: {
     unoptimized: true,

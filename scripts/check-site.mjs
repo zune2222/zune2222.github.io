@@ -1,0 +1,17 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {analysisState} from '../portfolio/model.mjs';
+assert.equal(analysisState('normal',4).status,'READY');
+assert.equal(analysisState('stale',4).status,'PENDING');
+assert.equal(analysisState('stale',4).accepted,false);
+assert.equal(analysisState('source',4).status,'NEEDS_CONTENT');
+for(const file of ['index.html','assets/site.css','assets/app.mjs','assets/model.mjs','portfolio.pdf','legacy/index.html','legacy/log/index.html','legacy/memory/index.html','legacy/posts/log-01/index.html','posts/log-01/index.html']) assert(fs.existsSync(`dist/${file}`),`Missing ${file}`);
+assert.equal(fs.readFileSync('dist/portfolio.pdf').subarray(0,4).toString(),'%PDF');
+const html=fs.readFileSync('dist/index.html','utf8');
+assert(html.includes('우리모하냥'));
+assert(!/010-6643|2002-06-24|삼어로|KMD/.test(html));
+const legacy=fs.readFileSync('dist/legacy/log/index.html','utf8');
+assert(legacy.includes('href="/legacy/posts/log-01/"'));
+assert(legacy.includes('/legacy/_next/'));
+assert(fs.readFileSync('dist/posts/log-01/index.html','utf8').includes('/legacy/posts/log-01/'));
+console.log('Verified output, PDF, legacy base paths, incoming redirects and analysis model boundaries.');

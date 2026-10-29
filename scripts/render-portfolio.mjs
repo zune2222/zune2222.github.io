@@ -1,0 +1,21 @@
+import {createRequire} from 'node:module';
+import fs from 'node:fs';
+import path from 'node:path';
+const require=createRequire(import.meta.url);
+const {chromium}=require('playwright');
+const target=path.resolve(process.argv[2]||'portfolio/portfolio.pdf');
+const browser=await chromium.launch({headless:true});
+const page=await browser.newPage({viewport:{width:1000,height:1400}});
+await page.goto(process.env.PORTFOLIO_PRINT_URL||'http://127.0.0.1:8765/print.html',{waitUntil:'networkidle'});
+await page.emulateMedia({media:'print'});
+const layout=await page.locator('.sheet').evaluateAll(pages=>pages.map((p,i)=>{
+  const r=p.getBoundingClientRect();
+  const footer=p.querySelector('.page-footer').getBoundingClientRect();
+  const content=[...p.children].filter(c=>!c.classList.contains('page-footer')).map(c=>({tag:c.tagName,bottom:c.getBoundingClientRect().bottom-r.top,text:c.textContent.slice(0,55)}));
+  return {page:i+1,title:p.querySelector('h1')?.textContent,height:r.height,footerTop:footer.top-r.top,maxContentBottom:Math.max(...content.map(c=>c.bottom)),overflow:content.filter(c=>c.bottom>footer.top-r.top-12)};
+}));
+fs.mkdirSync(path.dirname(target),{recursive:true});
+fs.writeFileSync(target.replace(/\.pdf$/,'.layout.json'),JSON.stringify(layout,null,2));
+await page.pdf({path:target,format:'A4',printBackground:true,preferCSSPageSize:true,margin:{top:0,right:0,bottom:0,left:0}});
+await browser.close();
+console.log(JSON.stringify({pdf:target,pages:layout.length,overflow:layout.filter(p=>p.overflow.length)},null,2));

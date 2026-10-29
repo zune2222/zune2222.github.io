@@ -1,3 +1,32 @@
+# 박준이 포트폴리오 · zun2log
+
+- 포트폴리오: https://zune2222.github.io/
+- PDF: https://zune2222.github.io/portfolio.pdf
+- 이전 블로그: https://zune2222.github.io/legacy/
+
+## 수정과 배포
+
+포트폴리오 원고는 `portfolio/content.json`, 웹 스타일은 `portfolio/style.css`, PDF 스타일은 `portfolio/print.css`입니다. `main` push 시 GitHub Actions가 포트폴리오와 기존 Next.js 블로그를 함께 배포합니다. 기존 블로그 소스와 글은 원래 경로에 보존하고 `next.config.js`의 `/legacy` basePath로 빌드합니다. 기존 `/posts/`, `/log/`, `/memory/` 접근은 해당 이전 블로그 경로로 연결합니다.
+
+```sh
+npm ci
+npx next build
+node portfolio/build.mjs
+node scripts/assemble-site.mjs
+node scripts/check-site.mjs
+python3 -m http.server 8765 --directory dist
+```
+
+PDF 갱신은 위 서버 실행 뒤 Playwright를 사용할 수 있는 Node 환경에서 `node scripts/render-portfolio.mjs`를 실행합니다. `portfolio/portfolio.pdf`를 웹과 함께 배포합니다. 전체 HTML과 PDF는 같은 원고를 사용합니다.
+
+## 일러스트
+
+처리 원리를 설명하는 모형은 Anatomy SVG kit를 사용했습니다. `portfolio/vendor/ANATOMY-LICENSE`에 MIT 라이선스를 보존했습니다. 실제 AI API 호출이나 성능 측정 시뮬레이터가 아닙니다.
+
+---
+
+## 이전 블로그 README
+
 # zun2log
 
 ---

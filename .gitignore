@@ -41,3 +41,7 @@ next-env.d.ts
 .contentlayer
 
 .env.local
+# Combined portfolio + legacy output
+/dist/
+portfolio/*.layout.json
+portfolio/machine-*.svg
